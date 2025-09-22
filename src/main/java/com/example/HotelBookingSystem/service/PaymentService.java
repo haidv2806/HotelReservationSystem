@@ -14,12 +14,19 @@ public class PaymentService implements PaymentServiceImpl {
     PaymentRepository   paymentRepository;
     @Override
     public Payment createPayment(Long bookingId, BigDecimal amount, String method) {
-        Pay
+        Payment p = new Payment();
+        p.setId_booking(bookingId);
+        p.setAmount(amount);
+        p.setPayment_method(method);
+        p.setStatus("PENDING");
+        return paymentRepository.save(p);
 
     }
 
     @Override
     public Payment updatePayment(String transactionRef, String status) {
-        return null;
+        Payment p = paymentRepository.findByTransaction_ref(transactionRef).orElseThrow(() -> new RuntimeException("Payment not found"));
+        p.setStatus(status);
+        return paymentRepository.save(p);
     }
 }
