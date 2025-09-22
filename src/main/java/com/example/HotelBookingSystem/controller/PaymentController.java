@@ -24,15 +24,13 @@ public class PaymentController {
 
     @PostMapping("/create")
     public ResponseEntity<Map<String, String>> createPayment(@RequestBody Map<String, String> payload) {
-        Long bookingId = Long.parseLong(payload.get("bookingId"));
+        Integer bookingId = Integer.parseInt(payload.get("bookingId"));
         BigDecimal amount = new BigDecimal(payload.get("amount"));
         String method = payload.get("method");
         Payment payment = paymentService.createPayment(bookingId, amount, method);
         String qrUrl = null;
         if ("ONLINE".equalsIgnoreCase(method)) {
             qrUrl = qrPaymentService.generateQR(
-                    "VCB",
-                    "0123456789",
                     amount,
                     "BOOKING" + bookingId
             );

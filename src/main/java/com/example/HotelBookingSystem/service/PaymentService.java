@@ -13,7 +13,7 @@ public class PaymentService implements PaymentServiceImpl {
     @Autowired
     PaymentRepository   paymentRepository;
     @Override
-    public Payment createPayment(Long bookingId, BigDecimal amount, String method) {
+    public Payment createPayment(Integer bookingId, BigDecimal amount, String method) {
         Payment p = new Payment();
         p.setId_booking(bookingId);
         p.setAmount(amount);
@@ -25,7 +25,7 @@ public class PaymentService implements PaymentServiceImpl {
 
     @Override
     public Payment updatePayment(String transactionRef, String status) {
-        Payment p = paymentRepository.findByTransaction_ref(transactionRef).orElseThrow(() -> new RuntimeException("Payment not found"));
+        Payment p = paymentRepository.findByTransactionRef(transactionRef).orElseThrow(() -> new RuntimeException("Payment not found"));
         p.setStatus(status);
         return paymentRepository.save(p);
     }

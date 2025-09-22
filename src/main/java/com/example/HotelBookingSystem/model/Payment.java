@@ -1,6 +1,7 @@
 package com.example.HotelBookingSystem.model;
 
 import jakarta.persistence.*;
+import org.hibernate.Internal;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -12,10 +13,10 @@ public class Payment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_payment")
-    private Long id_payment;
+    private Integer id_payment;
 
     @Column(name = "id_booking", nullable = false)
-    private Long id_booking;
+    private Integer id_booking;
 
     @Column(name = "payment_method", nullable = false)
     private String payment_method = "CASH"; // ENUM('CASH','CARD','ONLINE','VOUCHER')
@@ -30,21 +31,22 @@ public class Payment {
     private String status = "PENDING"; // ENUM('PENDING','PAID','REFUNDED')
 
     @Column(name = "transaction_ref")
-    private String transaction_ref;
+    private String transactionRef;
 
-    public Long getId_payment() {
+    // Getter & Setter
+    public Integer getId_payment() {
         return id_payment;
     }
 
-    public void setId_payment(Long id_payment) {
+    public void setId_payment(Integer id_payment) {
         this.id_payment = id_payment;
     }
 
-    public Long getId_booking() {
+    public Integer getId_booking() {
         return id_booking;
     }
 
-    public void setId_booking(Long id_booking) {
+    public void setId_booking(Integer id_booking) {
         this.id_booking = id_booking;
     }
 
@@ -81,10 +83,10 @@ public class Payment {
     }
 
     public String getTransaction_ref() {
-        return transaction_ref;
+        return transactionRef;
     }
 
     public void setTransaction_ref(String transaction_ref) {
-        this.transaction_ref = transaction_ref;
+        this.transactionRef = transaction_ref;
     }
 }
