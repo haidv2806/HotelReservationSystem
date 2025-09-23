@@ -19,6 +19,6 @@ public interface RoomServiceImpl {
 
     void delete();
 
-    // Page<Room> searchRoom(String roomType, LocalDate checkin, LocalDate checkout, BigDecimal minPrice,
-    //         BigDecimal maxPrice, Pageable pageable);
+    Page<Room> searchRooms(String roomType, LocalDate checkin, LocalDate checkout, BigDecimal minPrice,
+            BigDecimal maxPrice, Pageable pageable);
 }

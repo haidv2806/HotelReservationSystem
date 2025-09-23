@@ -16,18 +16,30 @@ import org.springframework.stereotype.Repository;
 public interface RoomRepository extends JpaRepository<Room, Integer> {
     Page<Room> findAll(Pageable pageable);
 
-    // @Query("SELECT * FROM Room " +
-    //         "JOIN Manage_room ON Room.room_id = Manage_room.room_id" +
-    //         "JOIN Booking ON Room.room_id = Booking.room_id" +
-    //         "WHERE (:type IS NULL OR Room.type = :type) " +
-    //         "AND (:minPrice IS NULL OR Room.price >= :minPrice) " +
-    //         "AND (:maxPrice IS NULL OR Room.price <= :maxPrice)")
-    // Page<Room> searchRooms(
-    //         @Param("type") String type,
-    //         @Param("checkin") LocalDate checkin,
-    //         @Param("checkout") LocalDate checkout,
-    //         @Param("minPrice") BigDecimal minPrice,
-    //         @Param("maxPrice") BigDecimal maxPrice,
-    //         Pageable pageable);
-
+    @Query("""
+                SELECT r
+                FROM Room r
+                WHERE (:type IS NULL OR r.type = :type)
+                  AND (:minPrice IS NULL OR r.price >= :minPrice)
+                  AND (:maxPrice IS NULL OR r.price <= :maxPrice)
+                  AND r.status = 'available'
+                  AND r.roomId NOT IN (
+                      SELECT b.room.roomId
+                      FROM Booking b
+                      WHERE b.status IN ('PENDING','CONFIRMED','CHECKED_IN')
+                        AND (:checkInDate < b.checkoutDate AND :checkOutDate > b.checkinDate)
+                  )
+                  AND r.roomId NOT IN (
+                      SELECT mr.room.roomId
+                      FROM ManageRoom mr
+                      WHERE (:checkInDate < mr.endDate AND :checkOutDate > mr.startDate)
+                  )
+            """)
+    Page<Room> searchRooms(
+            @Param("type") String type,
+            @Param("checkInDate") LocalDate checkInDate,
+            @Param("checkOutDate") LocalDate checkOutDate,
+            @Param("minPrice") BigDecimal minPrice,
+            @Param("maxPrice") BigDecimal maxPrice,
+            Pageable pageable);
 }
