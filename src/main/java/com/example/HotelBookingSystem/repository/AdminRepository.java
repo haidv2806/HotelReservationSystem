@@ -9,5 +9,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface AdminRepository extends JpaRepository<Admin,Long> {
     Page<Admin> findAll(Pageable pageable);
-
+    Admin findByAdminNameAndPassword(String admin_name, String password);
 }

@@ -35,6 +35,9 @@ public class AdminService implements AdminServiceImpl{
 
     @Override
     public void delete() {
-
     }
+
+    @Override
+    public Admin login(String admin_name, String password) {return adminRepository.findByAdminNameAndPassword(admin_name, password);}
+
 }

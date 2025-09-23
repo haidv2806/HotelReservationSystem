@@ -12,4 +12,6 @@ public interface AdminServiceImpl {
     Admin save();
     Admin update();
     void delete();
+
+    Admin login(String admin_name, String password);
 }
