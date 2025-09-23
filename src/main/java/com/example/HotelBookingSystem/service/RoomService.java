@@ -8,6 +8,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Optional;
 
 @Service
@@ -24,6 +26,25 @@ public class RoomService implements RoomServiceImpl {
     public Page<Room> findAll(Pageable pageable) {
         return roomRepository.findAll(pageable);
     }
+
+    // @Override
+    // public Page<Room> searchRoom(
+    //         String roomType,
+    //         LocalDate checkin,
+    //         LocalDate checkout,
+    //         BigDecimal minPrice,
+    //         BigDecimal maxPrice,
+    //         Pageable pageable) {
+
+    //     // Trường hợp đơn giản: lọc theo roomType + khoảng giá
+    //     return roomRepository.searchRooms(
+    //             roomType,
+    //             checkin,
+    //             checkout,
+    //             minPrice,
+    //             maxPrice,
+    //             pageable);
+    // }
 
     @Override
     public Room save() {

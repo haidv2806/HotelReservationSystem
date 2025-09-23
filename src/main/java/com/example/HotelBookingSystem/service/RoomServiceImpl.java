@@ -4,6 +4,8 @@ import com.example.HotelBookingSystem.model.Room;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Optional;
 
 public interface RoomServiceImpl {
@@ -16,4 +18,7 @@ public interface RoomServiceImpl {
     Room update();
 
     void delete();
+
+    // Page<Room> searchRoom(String roomType, LocalDate checkin, LocalDate checkout, BigDecimal minPrice,
+    //         BigDecimal maxPrice, Pageable pageable);
 }

@@ -16,8 +16,16 @@ import java.util.List;
 public class FindRoomController {
     @Autowired
     private RoomService roomService;
+    
     @GetMapping("/room")
     public List<Room> getAllRoom()
+    {
+        return roomService.findAll(PageRequest.of(0, 100))
+                .getContent();
+    }
+
+    @GetMapping("/searchRoom")
+    public List<Room> searchRoom()
     {
         return roomService.findAll(PageRequest.of(0, 100))
                 .getContent();
