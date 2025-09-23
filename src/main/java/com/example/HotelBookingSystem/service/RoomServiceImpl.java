@@ -1,5 +1,7 @@
 package com.example.HotelBookingSystem.service;
 
+import com.example.HotelBookingSystem.dto.RoomDetailResponse;
+
 import com.example.HotelBookingSystem.model.Room;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,4 +23,6 @@ public interface RoomServiceImpl {
 
     Page<Room> searchRooms(String roomType, LocalDate checkin, LocalDate checkout, BigDecimal minPrice,
             BigDecimal maxPrice, Pageable pageable);
+
+    RoomDetailResponse getRoomDetail(Integer room_id);
 }
