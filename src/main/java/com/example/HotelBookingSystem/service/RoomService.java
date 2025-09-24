@@ -56,6 +56,7 @@ public class RoomService implements RoomServiceImpl {
                 checkout,
                 minPrice,
                 maxPrice,
+                Room.Status.available,
                 pageable);
     }
 
@@ -131,21 +132,49 @@ public class RoomService implements RoomServiceImpl {
         return res;
     }
 
-    @Override
-    public Room save() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'save'");
+
+    public Room save(Room room) {
+        return roomRepository.save(room);
     }
 
     @Override
-    public Room update() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'update'");
+    public Room update(Integer id, Room newRoom) {
+        return roomRepository.findById(id)
+                .map(room -> {
+                    room.setRoomName(newRoom.getRoomName());
+                    room.setType(newRoom.getType());
+                    room.setPrice(newRoom.getPrice());
+                    room.setDescription(newRoom.getDescription());
+                    room.setImg(newRoom.getImg());
+                    room.setStatus(newRoom.getStatus());
+                    return roomRepository.save(room);
+                })
+                .orElse(null);
     }
 
     @Override
-    public void delete() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'delete'");
+    public void delete(Integer id) {
+        roomRepository.findById(id).ifPresent(room -> {
+            room.setStatus(Room.Status.deleted);
+            roomRepository.save(room);
+        });
+    }
+
+
+    @Override
+    public String deleteHandle(Integer id) {
+        Optional<Room> result = this.findRoom(id);
+
+        if (result.isPresent()) {
+            Room room = result.get();
+            if (room.getStatus() == Room.Status.deleted) {
+                return "Phòng đã bị xóa trước đó";
+            }
+            this.delete(id); // gọi hàm set status = deleted
+            return "Xóa thành công";
+        } else {
+            return "Không tồn tại phòng";
+        }
     }
 }
+

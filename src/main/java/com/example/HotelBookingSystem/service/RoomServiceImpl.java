@@ -12,15 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface RoomServiceImpl {
-    Optional<Room> findRoom(Integer id);
-
     Page<Room> findAll(Pageable pageable);
-
-    Room save();
-
-    Room update();
-
-    void delete();
 
     Page<Room> searchRooms(String roomType, LocalDate checkin, LocalDate checkout, BigDecimal minPrice,
             BigDecimal maxPrice, Pageable pageable);
@@ -28,4 +20,14 @@ public interface RoomServiceImpl {
     RoomDetailResponse getRoomDetail(Integer room_id);
 
     List<LocalDate> RoomBlockDay(Integer room_id);
+
+    Optional<Room> findRoom(Integer id);
+
+    Room save(Room room);
+
+    Room update(Integer id, Room room);
+
+    void delete(Integer id);
+
+    String deleteHandle(Integer id);
 }

@@ -23,7 +23,7 @@ public interface RoomRepository extends JpaRepository<Room, Integer> {
                 WHERE (:type IS NULL OR r.type = :type)
                   AND (:minPrice IS NULL OR r.price >= :minPrice)
                   AND (:maxPrice IS NULL OR r.price <= :maxPrice)
-                  AND r.status = 'available'
+                  AND r.status = :status
                   AND r.roomId NOT IN (
                       SELECT b.room.roomId
                       FROM Booking b
@@ -42,6 +42,7 @@ public interface RoomRepository extends JpaRepository<Room, Integer> {
             @Param("checkOutDate") LocalDate checkOutDate,
             @Param("minPrice") BigDecimal minPrice,
             @Param("maxPrice") BigDecimal maxPrice,
+            @Param("status") Room.Status status,
             Pageable pageable);
 
 }
