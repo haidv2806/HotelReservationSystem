@@ -16,6 +16,7 @@ public class BookingDetailRespone {
     private String phone;
     private Booking.Status status;
     private Payment.PaymentMethod paymentMethod;
+    private String qrCode;
 
     public String getRoomName() {
         return roomName;
@@ -87,5 +88,13 @@ public class BookingDetailRespone {
 
     public void setPaymentMethod(Payment.PaymentMethod paymentMethod) {
         this.paymentMethod = paymentMethod;
+    }
+
+    public String getQRCode() {
+        return qrCode;
+    }
+
+    public void setQRCode(String qrCode) {
+        this.qrCode = qrCode;
     }
 }

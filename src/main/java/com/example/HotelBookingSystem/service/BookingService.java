@@ -34,6 +34,9 @@ public class BookingService implements BookingServieImpl {
     private PaymentRepository paymentRepository;
 
     @Autowired
+    private QRPaymentService qrPaymentService;
+
+    @Autowired
     private CustomerRepository customerRepository;
 
     @Autowired
@@ -140,6 +143,15 @@ public class BookingService implements BookingServieImpl {
 
             Payment resultPayment = paymentRepository.save(addPayment);
 
+            // tạo QR code
+            String description = resultAddBooking.getCustomer().getCustomerName()
+                    + " | SĐT: " + resultAddBooking.getCustomer().getPhone()
+                    + " | Nhận: " + resultAddBooking.getCheckinDate()
+                    + " | Trả: " + resultAddBooking.getCheckoutDate()
+                    + " | Phòng: " + resultAddBooking.getRoom().getRoomName();
+
+            String qrPath = qrPaymentService.generateQR(totalPrice, description);
+
             // nội dung trả về
             BookingDetailRespone res = new BookingDetailRespone();
 
@@ -152,6 +164,7 @@ public class BookingService implements BookingServieImpl {
             res.setPhone(resultAddBooking.getCustomer().getPhone());
             res.setStatus(resultAddBooking.getStatus());
             res.setPaymentMethod(resultPayment.getPaymentMethod());
+            res.setQRCode(qrPath);
 
             return res;
         } catch (Exception e) {
