@@ -119,13 +119,13 @@ public class RoomService implements RoomServiceImpl {
             }
         });
 
-        // Tạo DTO từ entity Room
+        // Tạo dto từ entity Room
         RoomDetailResponse res = new RoomDetailResponse(
                 room.getRoomName(),
                 room.getDescription(),
                 room.getImg(),
                 room.getType(),
-                room.getPrice().doubleValue(), // vì DTO dùng Double, entity dùng BigDecimal
+                room.getPrice().doubleValue(), // vì dto dùng Double, entity dùng BigDecimal
                 blockDates);
 
         return res;

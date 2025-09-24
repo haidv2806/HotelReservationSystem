@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Customer Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script>
+        async function changeStatus(customer_id, status) {
+            const response = await fetch('/api/customer/customer_status', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ customerId: customer_id, status: status })
+            });
+            if (response.ok) {
+                location.reload(); // reload lại sau khi update
+            } else {
+                alert("Cập nhật thất bại");
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-100 p-6">
+<h1 class="text-2xl font-bold mb-6">Customer Dashboard</h1>
+
+<table class="min-w-full bg-white rounded shadow">
+    <thead class="bg-gray-200 text-left">
+    <tr>
+        <th class="py-2 px-4">ID</th>
+        <th class="py-2 px-4">Tên khách hàng</th>
+        <th class="py-2 px-4">Số điện thoại</th>
+        <th class="py-2 px-4">Trạng thái</th>
+        <th class="py-2 px-4">Hành động</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="c : ${customers}" class="border-b">
+        <td class="py-2 px-4" th:text="${c.customer_id}"></td>
+        <td class="py-2 px-4" th:text="${c.customer_name}"></td>
+        <td class="py-2 px-4" th:text="${c.phone}"></td>
+        <td class="py-2 px-4">
+            <span th:if="${c.status == 'normal'}" class="text-green-600 font-semibold">Normal</span>
+            <span th:if="${c.status == 'blacklist'}" class="text-red-600 font-semibold">Blacklist</span>
+        </td>
+        <td class="py-2 px-4">
+            <button th:if="${c.status == 'blacklist'}"
+                    class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded"
+                    th:onclick="'changeStatus(' + ${c.customer_id} + ', \'normal\')'">
+                Bỏ chặn
+            </button>
+            <button th:if="${c.status == 'normal'}"
+                    class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
+                    th:onclick="'changeStatus(' + ${c.customer_id} + ', \'blacklist\')'">
+                Chặn
+            </button>
+        </td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

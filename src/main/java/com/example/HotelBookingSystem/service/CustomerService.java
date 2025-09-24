@@ -2,14 +2,12 @@ package com.example.HotelBookingSystem.service;
 
 import com.example.HotelBookingSystem.model.Customer;
 import com.example.HotelBookingSystem.repository.CustomerRepository;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
-
 @Service
 public class CustomerService implements CustomerServiceImpl {
     @Autowired
@@ -26,23 +24,18 @@ public class CustomerService implements CustomerServiceImpl {
     }
 
     @Override
-    public Customer save() {
-        return null;
-    }
-
-    @Override
-    public Customer update() {
-        return null;
-    }
-
-    @Override
-    public void delete() {
-
-    }
-
-    @Override
     public Optional<Customer> findByPhone(String phone) {
-        return Optional.empty();
+        return customerRepository.findByPhone(phone);
+    }
+
+    @Override
+    public Customer save(Customer customer) {
+        return customerRepository.save(customer);
+    }
+
+    @Override
+    public void delete(Integer id) {
+        customerRepository.deleteById(id);
     }
 
     @Override
@@ -52,5 +45,17 @@ public class CustomerService implements CustomerServiceImpl {
         customer.setPhone(phone);
         // status mặc định là Status.normal
         return customerRepository.save(customer);
+    }
+
+    @Override
+    public Optional<Customer> updateStatus(Integer id, Customer.Status status) {
+        Optional<Customer> optionalCustomer = customerRepository.findById(id);
+        if (optionalCustomer.isPresent()) {
+            Customer customer = optionalCustomer.get();
+            customer.setStatus(status);
+            customerRepository.save(customer);
+            return Optional.of(customer);
+        }
+        return Optional.empty();
     }
 }
