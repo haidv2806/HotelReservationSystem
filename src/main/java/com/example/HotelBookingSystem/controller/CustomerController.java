@@ -5,24 +5,35 @@ import com.example.HotelBookingSystem.model.Admin;
 import com.example.HotelBookingSystem.model.Customer;
 import com.example.HotelBookingSystem.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
-@RestController
+@Controller
 @RequestMapping("/api/customer")
 public class CustomerController
 {
     @Autowired
+
     private CustomerService customerService;
-    @PutMapping("/customer_status")
-    public Optional<Customer> ChangeCustomerStatus(@RequestBody CustomerDTO dto)
+
+    @GetMapping("/dashboard")
+    public  String customerDashboard(Model model, Pageable pageable)
     {
-        //kiem tra admin_id
-//        return "cap nhat thanh cong";
-        return customerService.updateStatus(dto.getCustomerId(),dto.getStatus());
+        model.addAttribute("customers",customerService.findAll(pageable).getContent());
+        return "customer_dashboard";
     }
+    @PutMapping("/customer_status")
+    @ResponseBody
+//
+    public ResponseEntity<Customer> ChangeCustomerStatus(@RequestBody CustomerDTO dto) {
+        return customerService.updateStatus(dto.getCustomerId(), dto.getStatus())
+                .map(customer -> ResponseEntity.ok(customer))
+                .orElse(ResponseEntity.notFound().build());
+    }
+
 }
