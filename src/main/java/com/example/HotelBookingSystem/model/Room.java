@@ -1,5 +1,7 @@
 package com.example.HotelBookingSystem.model;
 
+import java.math.BigDecimal;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -23,7 +25,7 @@ public class Room {
     private String type;
 
     @Column(name = "price", nullable = false)
-    private Double price;
+    private BigDecimal price;
 
     @Enumerated(EnumType.STRING) // ánh xạ ENUM SQL -> Enum Java
     @Column(name = "status", nullable = false)
@@ -76,11 +78,11 @@ public class Room {
         this.type = type;
     }
 
-    public Double getPrice() {
+    public BigDecimal getPrice() {
         return price;
     }
 
-    public void setPrice(Double price) {
+    public void setPrice(BigDecimal price) {
         this.price = price;
     }
 
