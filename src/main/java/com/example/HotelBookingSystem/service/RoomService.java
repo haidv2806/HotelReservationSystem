@@ -32,7 +32,7 @@ public class RoomService implements RoomServiceImpl {
 
     @Override
     public Optional<Room> findRoom(Integer id) {
-        return Optional.empty();
+        return roomRepository.findById(id);
     }
 
     @Override
@@ -60,8 +60,8 @@ public class RoomService implements RoomServiceImpl {
     }
 
     @Override
-    public List<LocalDate> RoomBlockDay(Integer roomId){
-                // Lấy danh sách ngày bị block từ booking + manageRoom
+    public List<LocalDate> RoomBlockDay(Integer roomId) {
+        // Lấy danh sách ngày bị block từ booking + manageRoom
         List<LocalDate> blockDates = new ArrayList<>();
 
         // Block từ Booking
@@ -91,7 +91,8 @@ public class RoomService implements RoomServiceImpl {
 
     @Override
     public RoomDetailResponse getRoomDetail(Integer roomId) {
-        RoomDetailResponse dto = roomRepository.findRoomDetail(roomId);
+        Room room = roomRepository.findById(roomId)
+                .orElseThrow(() -> new RuntimeException("Room not found with id: " + roomId));
 
         // Lấy danh sách ngày bị block từ booking + manageRoom
         List<LocalDate> blockDates = new ArrayList<>();
@@ -118,8 +119,16 @@ public class RoomService implements RoomServiceImpl {
             }
         });
 
-        dto.setBlockDate(blockDates);
-        return dto;
+        // Tạo DTO từ entity Room
+        RoomDetailResponse res = new RoomDetailResponse(
+                room.getRoomName(),
+                room.getDescription(),
+                room.getImg(),
+                room.getType(),
+                room.getPrice().doubleValue(), // vì DTO dùng Double, entity dùng BigDecimal
+                blockDates);
+
+        return res;
     }
 
     @Override

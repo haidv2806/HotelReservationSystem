@@ -44,19 +44,4 @@ public interface RoomRepository extends JpaRepository<Room, Integer> {
             @Param("maxPrice") BigDecimal maxPrice,
             Pageable pageable);
 
-            
-    @Query("""
-                SELECT new com.example.HotelBookingSystem.dto.RoomDetailResponse(
-                    r.roomName,
-                    r.description,
-                    r.img,
-                    r.type,
-                    r.price,
-                    null
-                )
-                FROM Room r
-                WHERE r.roomId = :roomId
-            """)
-    RoomDetailResponse findRoomDetail(@Param("roomId") Integer roomId);
-
 }

@@ -91,8 +91,12 @@ public class BookingService implements BookingServieImpl {
 
             // kiểm tra có trong block date không?
             List<LocalDate> blockDates = roomService.RoomBlockDay(roomId);
-            if (blockDates.contains(checkIn) || blockDates.contains(checkOut)) {
-                throw new RuntimeException("Ngày đã bị chặn đặt phòng");
+            LocalDate d = checkIn;
+            while (d.isBefore(checkOut)) {
+                if (blockDates.contains(d)) {
+                    throw new RuntimeException("Ngày đã bị chặn đặt phòng: " + d);
+                }
+                d = d.plusDays(1);
             }
 
             // tổng giá
@@ -117,7 +121,7 @@ public class BookingService implements BookingServieImpl {
             booking.setTotalPrice(totalPrice);
             booking.setNote(note);
 
-            Booking resultAddBooking =  bookingRepository.save(booking);
+            Booking resultAddBooking = bookingRepository.save(booking);
 
             BookingDetailRespone res = new BookingDetailRespone();
 
