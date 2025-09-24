@@ -2,6 +2,8 @@ package com.example.HotelBookingSystem.service;
 
 import com.example.HotelBookingSystem.dto.BookingDetailRespone;
 import com.example.HotelBookingSystem.model.Booking;
+import com.example.HotelBookingSystem.model.Payment;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -19,5 +21,5 @@ public interface BookingServieImpl {
 
     void delete();
 
-    BookingDetailRespone create(Integer roomId, String customerName, String Phone, LocalDate checkIn, LocalDate checkOut, String note);
+    BookingDetailRespone create(Integer roomId, String customerName, String Phone, LocalDate checkIn, LocalDate checkOut, String note, Payment.PaymentMethod paymentMethod);
 }

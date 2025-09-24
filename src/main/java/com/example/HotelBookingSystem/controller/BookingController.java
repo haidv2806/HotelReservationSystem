@@ -33,7 +33,8 @@ public class BookingController {
                 req.getPhone(),
                 req.getCheckIn(),
                 req.getCheckOut(),
-                req.getNote());
+                req.getNote(),
+                req.getPaymentMethod());
         return ResponseEntity.ok(response);
     }
 

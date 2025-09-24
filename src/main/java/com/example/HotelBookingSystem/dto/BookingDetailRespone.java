@@ -1,6 +1,8 @@
 package com.example.HotelBookingSystem.dto;
 
 import com.example.HotelBookingSystem.model.Booking;
+import com.example.HotelBookingSystem.model.Payment;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
@@ -13,7 +15,8 @@ public class BookingDetailRespone {
     private String customerName;
     private String phone;
     private Booking.Status status;
-    
+    private Payment.PaymentMethod paymentMethod;
+
     public String getRoomName() {
         return roomName;
     }
@@ -76,5 +79,13 @@ public class BookingDetailRespone {
 
     public void setStatus(Booking.Status status) {
         this.status = status;
+    }
+
+    public Payment.PaymentMethod getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(Payment.PaymentMethod paymentMethod) {
+        this.paymentMethod = paymentMethod;
     }
 }

@@ -2,6 +2,8 @@ package com.example.HotelBookingSystem.dto;
 
 import java.time.LocalDate;
 
+import com.example.HotelBookingSystem.model.Payment;
+
 public class CreateBookingRequest {
     private Integer roomId;
     private String customerName;
@@ -9,6 +11,7 @@ public class CreateBookingRequest {
     private LocalDate checkIn;
     private LocalDate checkOut;
     private String note;
+    private Payment.PaymentMethod paymentMethod;
 
     public Integer getRoomId() {
         return roomId;
@@ -56,5 +59,13 @@ public class CreateBookingRequest {
 
     public void setNote(String note) {
         this.note = note;
+    }
+
+    public Payment.PaymentMethod getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(Payment.PaymentMethod paymentMethod) {
+        this.paymentMethod = paymentMethod;
     }
 }

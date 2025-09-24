@@ -5,10 +5,12 @@ import com.example.HotelBookingSystem.model.Booking;
 import com.example.HotelBookingSystem.model.Customer;
 import com.example.HotelBookingSystem.model.Room;
 import com.example.HotelBookingSystem.model.ManageRoom;
+import com.example.HotelBookingSystem.model.Payment;
 import com.example.HotelBookingSystem.repository.BookingRepository;
 import com.example.HotelBookingSystem.repository.CustomerRepository;
 import com.example.HotelBookingSystem.repository.RoomRepository;
 import com.example.HotelBookingSystem.repository.ManageRoomRepository;
+import com.example.HotelBookingSystem.repository.PaymentRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -27,6 +29,9 @@ public class BookingService implements BookingServieImpl {
 
     @Autowired
     private BookingRepository bookingRepository;
+
+    @Autowired
+    private PaymentRepository paymentRepository;
 
     @Autowired
     private CustomerRepository customerRepository;
@@ -75,7 +80,8 @@ public class BookingService implements BookingServieImpl {
             String Phone,
             LocalDate checkIn,
             LocalDate checkOut,
-            String note) {
+            String note,
+            Payment.PaymentMethod paymentMethod) {
         try {
             // Kiểm tra phòng
             Optional<Room> resuttRoom = roomService.findRoom(roomId);
@@ -107,6 +113,9 @@ public class BookingService implements BookingServieImpl {
             Optional<Customer> resultFind = customerRepository.findByPhone(Phone);
             Customer customer;
             if (resultFind.isPresent()) {
+                if (resultFind.get().getStatus() == Customer.Status.blacklist) {
+                    throw new RuntimeException("Khách hàng bị hạn chế đặt phòng");
+                }
                 customer = resultFind.get();
             } else {
                 customer = customerService.createCustomer(customerName, Phone);
@@ -123,6 +132,15 @@ public class BookingService implements BookingServieImpl {
 
             Booking resultAddBooking = bookingRepository.save(booking);
 
+            // thêm phương thức thanh toán
+            Payment addPayment = new Payment();
+            addPayment.setBooking(resultAddBooking);
+            addPayment.setAmount(resultAddBooking.getTotalPrice());
+            addPayment.setPaymentMethod(paymentMethod);
+
+            Payment resultPayment = paymentRepository.save(addPayment);
+
+            // nội dung trả về
             BookingDetailRespone res = new BookingDetailRespone();
 
             res.setRoomName(resultAddBooking.getRoom().getRoomName());
@@ -133,6 +151,7 @@ public class BookingService implements BookingServieImpl {
             res.setCustomerName(resultAddBooking.getCustomer().getCustomerName());
             res.setPhone(resultAddBooking.getCustomer().getPhone());
             res.setStatus(resultAddBooking.getStatus());
+            res.setPaymentMethod(resultPayment.getPaymentMethod());
 
             return res;
         } catch (Exception e) {
