@@ -17,7 +17,7 @@
 //public interface RoomRepository extends JpaRepository<Room, Integer> {
 //    Page<Room> findAll(Pageable pageable);
 //
-//    @Query("""
+//    @Query(value = """
 //                SELECT r
 //                FROM Room r
 //                WHERE (:type IS NULL OR r.type = :type)
