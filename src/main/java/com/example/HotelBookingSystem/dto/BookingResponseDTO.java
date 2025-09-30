@@ -1,5 +1,7 @@
 package com.example.HotelBookingSystem.dto;
 
+import com.example.HotelBookingSystem.model.Booking;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -8,6 +10,8 @@ import java.time.LocalDateTime;
 
 public class BookingResponseDTO {
     private int idBooking;
+    private String roomName;
+    private String customerName;
     private LocalDateTime createAt;
     private LocalDate checkinDate;
     private LocalDate checkoutDate;
@@ -15,9 +19,6 @@ public class BookingResponseDTO {
     private BigDecimal totalPrice;
     private String status;
 
-    private int adminId;
-    private int roomId;
-    private int customerId;
 
     public int getIdBooking() {
         return idBooking;
@@ -25,6 +26,22 @@ public class BookingResponseDTO {
 
     public void setIdBooking(int idBooking) {
         this.idBooking = idBooking;
+    }
+
+    public String getRoomName() {
+        return roomName;
+    }
+
+    public void setRoomName(String roomName) {
+        this.roomName = roomName;
+    }
+
+    public String getCustomerName() {
+        return customerName;
+    }
+
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
     }
 
     public LocalDateTime getCreateAt() {
@@ -73,29 +90,5 @@ public class BookingResponseDTO {
 
     public void setStatus(String status) {
         this.status = status;
-    }
-
-    public int getAdminId() {
-        return adminId;
-    }
-
-    public void setAdminId(int adminId) {
-        this.adminId = adminId;
-    }
-
-    public int getRoomId() {
-        return roomId;
-    }
-
-    public void setRoomId(int roomId) {
-        this.roomId = roomId;
-    }
-
-    public int getCustomerId() {
-        return customerId;
-    }
-
-    public void setCustomerId(int customerId) {
-        this.customerId = customerId;
     }
 }

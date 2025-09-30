@@ -2,6 +2,7 @@ package com.example.HotelBookingSystem.service;
 
 import com.example.HotelBookingSystem.dto.BookingDetailRespone;
 import com.example.HotelBookingSystem.dto.BookingRequestDTO;
+import com.example.HotelBookingSystem.dto.BookingResponseDTO;
 import com.example.HotelBookingSystem.model.Booking;
 import com.example.HotelBookingSystem.model.Payment;
 
@@ -27,9 +28,5 @@ public interface BookingServieImpl {
     // phan bookingconfirm Hieu
     List<Booking> getAllBookings();
     Booking getBookingById(int id);
-    Booking createBooking(BookingRequestDTO dto);
-    Booking confirmBooking(int bookingId, long adminId);
-    Booking checkIn(int bookingId, long adminId);
-    Booking checkOut(int bookingId, long adminId);
-    Booking cancelBooking(int bookingId, long adminId);
+    BookingResponseDTO updateBookingStatus(int bookingId, BookingRequestDTO requestDTO);
 }

@@ -54,41 +54,12 @@ public class BookingController {
         return BookingConfirmMapper.toDTO(booking);
     }
 
-    //------------------------CREATE---------------------------
-    @PostMapping("/confirm/create")
-    public ResponseEntity<BookingResponseDTO> createBooking(@RequestBody BookingRequestDTO dto) {
-        Booking booking = bookingService.createBooking(dto);
-        return ResponseEntity.ok(BookingConfirmMapper.toDTO(booking));
-    }
-
     // ------------------- UPDATE STATUS -------------------
-    @PutMapping("/confirm/update/{id}")
-    public ResponseEntity<BookingResponseDTO> confirmBooking(@PathVariable("id") int bookingId,
-                                                             @RequestParam Long adminId) {
-        Booking booking = bookingService.confirmBooking(bookingId, adminId);
-        return ResponseEntity.ok(BookingConfirmMapper.toDTO(booking));
+    @PutMapping("/confirm/{id}")
+    public ResponseEntity<BookingResponseDTO> updateStatus(@PathVariable("id") int bookingId,
+                                                           @RequestBody BookingRequestDTO requestDTO) {
+        BookingResponseDTO response = bookingService.updateBookingStatus(bookingId, requestDTO);
+        return ResponseEntity.ok(response);
     }
-
-    @PutMapping("/confirm/checkin/{id}")
-    public ResponseEntity<BookingResponseDTO> checkinBooking(@PathVariable("id") int bookingId,
-                                                             @RequestParam Long adminId) {
-        Booking booking = bookingService.checkIn(bookingId, adminId);
-        return ResponseEntity.ok(BookingConfirmMapper.toDTO(booking));
-    }
-
-    @PutMapping("/confirm/checkout/{id}")
-    public ResponseEntity<BookingResponseDTO> checkoutBooking(@PathVariable("id") int bookingId,
-                                                              @RequestParam Long adminId) {
-        Booking booking = bookingService.checkOut(bookingId, adminId);
-        return ResponseEntity.ok(BookingConfirmMapper.toDTO(booking));
-    }
-
-    @PutMapping("/confirm/cancel/{id}")
-    public ResponseEntity<BookingResponseDTO> cancelBooking(@PathVariable("id") int bookingId,
-                                                            @RequestParam Long adminId) {
-        Booking booking = bookingService.cancelBooking(bookingId, adminId);
-        return ResponseEntity.ok(BookingConfirmMapper.toDTO(booking));
-    }
-
 
 }
