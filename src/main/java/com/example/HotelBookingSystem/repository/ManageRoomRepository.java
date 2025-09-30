@@ -1,6 +1,8 @@
 package com.example.HotelBookingSystem.repository;
 
 import com.example.HotelBookingSystem.model.ManageRoom;
+
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,21 +17,30 @@ public interface ManageRoomRepository extends JpaRepository<ManageRoom, Integer>
     List<ManageRoom> findByRoom_RoomId(Integer roomId);
 
     //Phần của Hiếu
+    // Kiểm tra overlap với ManageRoom khác (khi tạo mới)
     @Query("SELECT COUNT(m) > 0 FROM ManageRoom m " +
             "WHERE m.room.roomId = :roomId " +
             "AND (m.startDate <= :endDate AND m.endDate >= :startDate)")
-    boolean existsOverlappingCreate(@Param("roomId") Integer roomId,
-                                    @Param("startDate") java.time.LocalDate startDate,
-                                    @Param("endDate") java.time.LocalDate endDate);
+    boolean existsManageRoomOverlap(@Param("roomId") Integer roomId,
+                                    @Param("startDate") LocalDate startDate,
+                                    @Param("endDate") LocalDate endDate);
 
-
-    // Kiểm tra overlap khi update (bỏ qua chính nó)
+    // Kiểm tra overlap với ManageRoom khác (khi update, bỏ qua chính nó)
     @Query("SELECT COUNT(m) > 0 FROM ManageRoom m " +
             "WHERE m.room.roomId = :roomId " +
             "AND m.manageRoomId <> :excludeId " +
             "AND (m.startDate <= :endDate AND m.endDate >= :startDate)")
-    boolean existsOverlappingUpdate(@Param("roomId") Integer roomId,
-                                    @Param("startDate") java.time.LocalDate startDate,
-                                    @Param("endDate") java.time.LocalDate endDate,
-                                    @Param("excludeId") Integer excludeId);
+    boolean existsManageRoomOverlapUpdate(@Param("roomId") Integer roomId,
+                                          @Param("startDate") LocalDate startDate,
+                                          @Param("endDate") LocalDate endDate,
+                                          @Param("excludeId") Integer excludeId);
+
+    // Kiểm tra overlap với Booking (PENDING, CONFIRMED, CHECKED_IN)
+    @Query("SELECT COUNT(b) > 0 FROM Booking b " +
+            "WHERE b.room.roomId = :roomId " +
+            "AND (b.checkinDate <= :endDate AND b.checkoutDate >= :startDate) " +
+            "AND b.status IN ('PENDING','CONFIRMED','CHECKED_IN')")
+    boolean existsBookingOverlap(@Param("roomId") Integer roomId,
+                                 @Param("startDate") LocalDate startDate,
+                                 @Param("endDate") LocalDate endDate);
 }

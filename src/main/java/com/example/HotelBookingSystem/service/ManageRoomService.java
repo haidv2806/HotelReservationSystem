@@ -47,19 +47,19 @@ public class ManageRoomService implements ManageRoomServiceImpl {
         return toDTO(m);
     }
     @Override
-    public ManageRoomDTO create(ManageRoomDTO dto, String currentAdmin) {
+    public ManageRoomDTO create(ManageRoomDTO dto) {
         if (dto.getStartDate().isAfter(dto.getEndDate())) {
             throw new RuntimeException("Start date must be before or equal to end date");
         }
 
 
-        boolean overlap = manageRoomRepo.existsOverlappingCreate(dto.getRoomId(), dto.getStartDate(), dto.getEndDate());
-        if (overlap) {
-            throw new RuntimeException("Room already has ManageRoom schedule in this date range");
+        if (manageRoomRepo.existsManageRoomOverlap(dto.getRoomId(), dto.getStartDate(), dto.getEndDate())
+                || manageRoomRepo.existsBookingOverlap(dto.getRoomId(), dto.getStartDate(), dto.getEndDate())) {
+            throw new RuntimeException("Room already has schedule or booking in this date range");
         }
 
 
-        Admin admin = adminRepo.findByAdminName(currentAdmin).orElseThrow(() -> new RuntimeException("Admin not found"));
+
         Room room = roomRepo.findById(dto.getRoomId()).orElseThrow(() -> new RuntimeException("Room not found"));
 
 
@@ -68,7 +68,6 @@ public class ManageRoomService implements ManageRoomServiceImpl {
         m.setEndDate(dto.getEndDate());
         m.setNote(dto.getNote());
         m.setStatus(dto.getStatus());
-        m.setAdmin(admin);
         m.setRoom(room);
 
 
@@ -76,7 +75,7 @@ public class ManageRoomService implements ManageRoomServiceImpl {
     }
 
     @Override
-    public ManageRoomDTO update(Integer id, ManageRoomDTO dto, String currentAdmin) {
+    public ManageRoomDTO update(Integer id, ManageRoomDTO dto) {
         ManageRoom m = manageRoomRepo.findById(id).orElseThrow(() -> new RuntimeException("Not found"));
 
 
@@ -85,22 +84,18 @@ public class ManageRoomService implements ManageRoomServiceImpl {
         }
 
 
-        boolean overlap = manageRoomRepo.existsOverlappingUpdate(dto.getRoomId(), dto.getStartDate(), dto.getEndDate(), id);
-        if (overlap) {
-            throw new RuntimeException("Room already has ManageRoom schedule in this date range");
+        if (manageRoomRepo.existsManageRoomOverlap(dto.getRoomId(), dto.getStartDate(), dto.getEndDate())
+                || manageRoomRepo.existsBookingOverlap(dto.getRoomId(), dto.getStartDate(), dto.getEndDate())) {
+            throw new RuntimeException("Room already has schedule or booking in this date range");
         }
 
-
-        Admin admin = adminRepo.findByAdminName(currentAdmin).orElseThrow(() -> new RuntimeException("Admin not found"));
         Room room = roomRepo.findById(dto.getRoomId()).orElseThrow(() -> new RuntimeException("Room not found"));
-
 
         m.setStartDate(dto.getStartDate());
         m.setEndDate(dto.getEndDate());
         m.setNote(dto.getNote());
         m.setStatus(dto.getStatus());
         m.setRoom(room);
-        m.setAdmin(admin);
 
 
         return toDTO(manageRoomRepo.save(m));
@@ -113,3 +108,4 @@ public class ManageRoomService implements ManageRoomServiceImpl {
         manageRoomRepo.delete(m);
     }
 }
+
