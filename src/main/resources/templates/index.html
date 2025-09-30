@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="flex">
+  <!-- Gọi sidebar -->
+  <div th:insert="~{fragments/sidebar :: sidebar}"></div>
+
+
+  <!-- Nội dung trang -->
+  <main class="flex-1 p-6 bg-gray-100">
+    <div th:insert="~{fragments/customer/customer :: customer}"></div>
+  </main>
+</body>
+
+</html>

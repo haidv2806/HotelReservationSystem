@@ -2,9 +2,12 @@ package com.example.HotelBookingSystem.controller;
 
 import com.example.HotelBookingSystem.dto.CustomerDTO;
 import com.example.HotelBookingSystem.model.Customer;
+import com.example.HotelBookingSystem.repository.CustomerRepository;
 import com.example.HotelBookingSystem.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -19,5 +22,4 @@ public class CustomerController {
                 .map(customer -> ResponseEntity.ok(customer))
                 .orElse(ResponseEntity.notFound().build());
     }
-
 }
