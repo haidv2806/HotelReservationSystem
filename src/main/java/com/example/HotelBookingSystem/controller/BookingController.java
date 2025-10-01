@@ -1,11 +1,7 @@
 package com.example.HotelBookingSystem.controller;
 
-import com.example.HotelBookingSystem.dto.BookingRequestDTO;
-import com.example.HotelBookingSystem.dto.BookingResponseDTO;
 import com.example.HotelBookingSystem.dto.CreateBookingRequest;
-import com.example.HotelBookingSystem.mapper.BookingConfirmMapper;
 import com.example.HotelBookingSystem.model.Admin;
-import com.example.HotelBookingSystem.model.Booking;
 import com.example.HotelBookingSystem.service.AdminService;
 import com.example.HotelBookingSystem.service.BookingService;
 import com.example.HotelBookingSystem.dto.BookingDetailRespone;
@@ -15,7 +11,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -35,30 +35,6 @@ public class BookingController {
                 req.getCheckOut(),
                 req.getNote(),
                 req.getPaymentMethod());
-        return ResponseEntity.ok(response);
-    }
-
-    // phan cua hieu booking confirm
-
-    @GetMapping("/confirm")
-    public List<BookingResponseDTO> getAllBookings() {
-        return bookingService.getAllBookings()
-                .stream()
-                .map(BookingConfirmMapper::toDTO)
-                .toList();
-    }
-
-    @GetMapping("/confirm/{id}")
-    public BookingResponseDTO getBookingById(@PathVariable int id) {
-        Booking booking = bookingService.getBookingById(id);
-        return BookingConfirmMapper.toDTO(booking);
-    }
-
-    // ------------------- UPDATE STATUS -------------------
-    @PutMapping("/confirm/{id}")
-    public ResponseEntity<BookingResponseDTO> updateStatus(@PathVariable("id") int bookingId,
-                                                           @RequestBody BookingRequestDTO requestDTO) {
-        BookingResponseDTO response = bookingService.updateBookingStatus(bookingId, requestDTO);
         return ResponseEntity.ok(response);
     }
 

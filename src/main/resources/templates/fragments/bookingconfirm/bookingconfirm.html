@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Booking Confirm</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+
+</head>
+<body th:fragment="bookingconfirm" class="bg-gray-100 p-6">
+
+<h1 class="text-2xl font-bold mb-6">Booking Confirm</h1>
+
+<table class="min-w-full bg-white rounded shadow">
+    <thead class="bg-gray-200">
+    <tr>
+        <th class="border border-gray-300 px-4 py-2">ID Booking</th>
+        <th class="border border-gray-300 px-4 py-2">Create At</th>
+        <th class="border border-gray-300 px-4 py-2">Checkin Date</th>
+        <th class="border border-gray-300 px-4 py-2">Checkout Date</th>
+        <th class="border border-gray-300 px-4 py-2">Note</th>
+        <th class="border border-gray-300 px-4 py-2">Total Price</th>
+        <th class="border border-gray-300 px-4 py-2">Status</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="b : ${bookings}" class="border-b">
+        <td class="px-4 py-2" th:text="${b.idBooking}"></td>
+        <td class="px-4 py-2" th:text="${#temporals.format(b.createAt, 'dd-MM-yyyy HH:mm')}"></td>
+        <td class="px-4 py-2" th:text="${#temporals.format(b.checkinDate, 'dd-MM-yyyy')}"></td>
+        <td class="px-4 py-2" th:text="${#temporals.format(b.checkoutDate, 'dd-MM-yyyy')}"></td>
+        <td class="px-4 py-2" th:text="${b.note != null ? b.note : 'N/A'}"></td>
+        <td class="px-4 py-2" th:text="${b.totalPrice != null ? b.totalPrice : '0'}"></td>
+        <td class="px-4 py-2">
+            <select th:id="'status-' + ${b.idBooking}"
+                    th:onchange="'changeBookingStatus(' + ${b.idBooking} + ', this.value)'"
+                    class="border rounded px-2 py-1">
+                <option value="PENDING"    th:selected="${b.status == 'PENDING'}">PENDING</option>
+                <option value="CONFIRMED"  th:selected="${b.status == 'CONFIRMED'}">CONFIRMED</option>
+                <option value="CHECKED_IN" th:selected="${b.status == 'CHECKED_IN'}">CHECKED_IN</option>
+                <option value="CHECKED_OUT" th:selected="${b.status == 'CHECKED_OUT'}">CHECKED_OUT</option>
+                <option value="CANCELED"   th:selected="${b.status == 'CANCELED'}">CANCELED</option>
+            </select>
+        </td>
+    </tr>
+    </tbody>
+</table>
+<script>
+    async function changeBookingStatus(booking_id, status) {
+        const body = { bookingId: booking_id, status: status };
+        console.log("Sending body:", body);
+
+        const response = await fetch('/api/booking/booking_status', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+        });
+
+        if (response.ok) {
+            location.reload();
+        } else {
+            const err = await response.text();
+            alert("Cập nhật thất bại: " + err);
+        }
+    }
+</script>
+</body>
+</html>
