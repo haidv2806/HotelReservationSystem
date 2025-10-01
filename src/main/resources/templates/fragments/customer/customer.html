@@ -4,20 +4,6 @@
   <meta charset="UTF-8">
   <title>Customer Dashboard</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <script>
-    async function changeStatus(customer_id, status) {
-        const response = await fetch('/api/customer/customer_status', {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ customerId: customer_id, status: status })
-        });
-        if (response.ok) {
-            location.reload(); // reload lại sau khi update
-        } else {
-            alert("Cập nhật thất bại");
-        }
-    }
-  </script>
 </head>
 <body th:fragment="customer" class="bg-gray-100 p-6">
 
@@ -39,23 +25,43 @@
     <td class="py-2 px-4" th:text="${c.customerName}"></td>
     <td class="py-2 px-4" th:text="${c.phone}"></td>
     <td class="py-2 px-4">
-      <span th:if="${c.status == 'normal'}" class="text-green-600 font-semibold">Normal</span>
-      <span th:if="${c.status == 'blacklist'}" class="text-red-600 font-semibold">Blacklist</span>
+      <span th:if="${c.status.name() == 'normal'}" class="text-green-600 font-semibold">Normal</span>
+      <span th:if="${c.status.name() == 'blacklist'}" class="text-red-600 font-semibold">Blacklist</span>
     </td>
     <td class="py-2 px-4">
-      <button th:if="${c.status == 'blacklist'}"
-              class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded"
-              th:onclick="'changeStatus(' + ${c.customerId} + ', \'normal\')'">
-        Bỏ chặn
-      </button>
-      <button th:if="${c.status == 'normal'}"
+      <button th:if="${c.status.name() == 'normal'}"
               class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
-              th:onclick="'changeStatus(' + ${c.customerId} + ', \'blacklist\')'">
+              th:onclick="|changeStatus(${c.customerId}, 'blacklist')|">
         Chặn
+      </button>
+
+      <button th:if="${c.status.name() == 'blacklist'}"
+              class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded"
+              th:onclick="|changeStatus(${c.customerId}, 'normal')|">
+        Bỏ chặn
       </button>
     </td>
   </tr>
   </tbody>
 </table>
+<script>
+  async function changeStatus(customer_id, status) {
+      const body = { customerId: customer_id, status: status };
+      console.log("Sending body:", body);
+
+      const response = await fetch('/api/customer/customer_status', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+      });
+
+      if (response.ok) {
+          location.reload();
+      } else {
+          const err = await response.text();
+          alert("Cập nhật thất bại: " + err);
+      }
+  }
+</script>
 </body>
 </html>

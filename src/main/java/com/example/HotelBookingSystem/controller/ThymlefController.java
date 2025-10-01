@@ -40,7 +40,6 @@ public class ThymlefController {
         }
         model.addAttribute("rooms", rooms);
         model.addAttribute("customers", customerRepository.findAll());
-        model.addAttribute("message", "Xin chào Thymeleaf!");
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", roomPage.getTotalPages());
 
@@ -94,5 +93,11 @@ public class ThymlefController {
     public String detail(Model model, @PathVariable Integer id) {
         model.addAttribute("room", roomService.getRoomDetail(id));
         return "detail"; // trỏ tới file templates/index.html
+    }
+
+    @GetMapping("/dashboard/cusomer")
+    public String index(Model model) {
+        model.addAttribute("customers", customerRepository.findAll());
+        return "customer"; // trỏ tới file templates/index.html
     }
 }
