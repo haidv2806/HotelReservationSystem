@@ -26,6 +26,9 @@ public class Room {
 
     @Column(name = "price", nullable = false)
     private BigDecimal price;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
     private Status status = Status.available; // mặc định
 
     // --- Enum ánh xạ với ENUM trong DB ---

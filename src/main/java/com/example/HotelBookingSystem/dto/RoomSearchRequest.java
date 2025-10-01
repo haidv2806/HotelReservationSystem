@@ -9,6 +9,7 @@ public class RoomSearchRequest {
     private LocalDate checkOutDate;
     private BigDecimal minPrice;
     private BigDecimal maxPrice;
+    
     public String getRoomType() {
         return roomType;
     }

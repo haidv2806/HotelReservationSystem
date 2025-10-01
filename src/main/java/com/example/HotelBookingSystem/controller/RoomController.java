@@ -1,6 +1,8 @@
 package com.example.HotelBookingSystem.controller;
 
 import com.example.HotelBookingSystem.dto.RoomCreateDTO;
+import com.example.HotelBookingSystem.dto.RoomDetailResponse;
+import com.example.HotelBookingSystem.dto.RoomSearchRequest;
 import com.example.HotelBookingSystem.model.Room;
 import com.example.HotelBookingSystem.service.RoomService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,13 +25,26 @@ public class RoomController {
         return roomService.findAll(PageRequest.of(0, 100)).getContent();
     }
 
-    // Lấy phòng theo ID
-    @GetMapping("/{id}")
-    public ResponseEntity<Room> getRoomById(@PathVariable Integer id) {
-        return roomService.findRoom(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    @PostMapping("/searchRoom")
+    public List<Room> searchRoom(@RequestBody RoomSearchRequest request) {
+        return roomService
+                .searchRooms(request.getRoomType(), request.getCheckInDate(), request.getCheckOutDate(),
+                        request.getMinPrice(), request.getMaxPrice(), PageRequest.of(0, 100))
+                .getContent();
     }
+
+    @GetMapping("/room/{id}")
+    public RoomDetailResponse roomDetail(@PathVariable("id") Integer roomId) {
+        return roomService.getRoomDetail(roomId);
+    }
+
+    // Lấy phòng theo ID
+    // @GetMapping("/{id}")
+    // public ResponseEntity<Room> getRoomById(@PathVariable Integer id) {
+    //     return roomService.findRoom(id)
+    //             .map(ResponseEntity::ok)
+    //             .orElse(ResponseEntity.notFound().build());
+    // }
 
     // Thêm phòng mới
     @PostMapping

@@ -3,19 +3,42 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>Dashboard</title>
+  <title>landing</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://unpkg.com/nouislider@latest/dist/nouislider.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.js"></script>
 </head>
 
-<body class="flex">
-  <!-- Gọi sidebar -->
-  <div th:insert="~{fragments/sidebar :: sidebar}"></div>
+<body class="bg-sky-100 text-gray-800 font-sans text-white">
 
+  <!-- Hero -->
+  <div th:insert="~{fragments/landing/hero :: hero}"></div>
 
   <!-- Nội dung trang -->
-  <main class="flex-1 p-6 bg-gray-100">
-    <div th:insert="~{fragments/customer/customer :: customer}"></div>
+  <main class="flex-1 p-6 space-y-4">
+    <div th:insert="~{fragments/landing/selecter :: selecter}"></div>
+    <div th:insert="~{fragments/landing/cards :: cards}"></div>
   </main>
+
+  <!-- Footer -->
+  <div th:insert="~{fragments/landing/footer :: footer}"></div>
+
+  <script th:if="${scrollToCards}">
+    document.addEventListener("DOMContentLoaded", function () {
+      const el = document.getElementById("cards");
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth" });
+      }
+    });
+  </script>
+  <style>
+    html {
+      scroll-behavior: smooth;
+    }
+  </style>
+
+
 </body>
+
 
 </html>

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Tìm kiếm phòng</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.js"></script>
+</head>
+
+<body th:fragment="selecter" class="flex items-center justify-center min-h-screen bg-sky-900">
+
+    <form action="/searchRoom" method="get" class="bg-sky-600 p-6 rounded-xl shadow-lg w-full text-white">
+
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-bold">Tìm kiếm phòng</h2>
+
+            <!-- Nút tìm kiếm -->
+            <div>
+                <button type="submit"
+                    class="px-6 py-3 bg-cyan-500 text-white rounded-lg font-semibold hover:bg-cyan-600 transition">
+                    Tìm kiếm
+                </button>
+            </div>
+        </div>
+
+        <!-- Tất cả trong 1 hàng -->
+        <div class="flex flex-wrap items-end gap-10">
+
+            <!-- Loại phòng -->
+            <div class="flex-1 min-w-[150px]">
+                <label class="block mb-2">Loại phòng</label>
+                <select name="roomType"
+                    class="w-full bg-cyan-500 text-white border border-cyan-400 rounded-lg p-2 focus:ring-2 focus:ring-cyan-400">
+                    <option value="" th:selected="${roomType == null}">Tất cả</option>
+                    <option value="Single" th:selected="${roomType == 'Single'}">Single</option>
+                    <option value="Double" th:selected="${roomType == 'Double'}">Double</option>
+                    <option value="Twin" th:selected="${roomType == 'Twin'}">Twin</option>
+                    <option value="Deluxe" th:selected="${roomType == 'Deluxe'}">Deluxe</option>
+                    <option value="VIP" th:selected="${roomType == 'VIP'}">VIP</option>
+                </select>
+            </div>
+
+            <!-- Check-in -->
+            <div class="flex-1 min-w-[150px]">
+                <label class="block mb-2">Ngày nhận phòng</label>
+                <input type="date" name="checkInDate" th:value="${checkInDate}"
+                    class="w-full bg-cyan-500 text-white border border-cyan-400 rounded-lg p-2 focus:ring-2 focus:ring-cyan-400">
+            </div>
+
+            <!-- Check-out -->
+            <div class="flex-1 min-w-[150px]">
+                <label class="block mb-2">Ngày trả phòng</label>
+                <input type="date" name="checkOutDate" th:value="${checkOutDate}"
+                    class="w-full bg-cyan-500 text-white border border-cyan-400 rounded-lg p-2 focus:ring-2 focus:ring-cyan-400">
+            </div>
+
+            <!-- Thanh kéo chọn giá -->
+            <div class="flex-1 min-w-[200px]">
+                <label class="block mb-2">Khoảng giá (VND / đêm)</label>
+                <div class="flex items-center text-sm font-semibold mb-2">
+                    <div id="min-price" class="text-center min-w-28">100,000 VND</div>
+                    <span class="px-2">-</span>
+                    <div id="max-price" class="text-center min-w-28">5,000,000 VND</div>
+                </div>
+                <div id="price-slider" class="w-full h-2"></div>
+                <input type="hidden" name="minPrice" id="minPriceInput" th:value="${minPrice}">
+                <input type="hidden" name="maxPrice" id="maxPriceInput" th:value="${maxPrice}">
+            </div>
+        </div>
+    </form>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var slider = document.getElementById('price-slider');
+            var minInput = document.getElementById('minPriceInput');
+            var maxInput = document.getElementById('maxPriceInput');
+
+            var minVal = parseInt(minInput.value) || 100000;
+            var maxVal = parseInt(maxInput.value) || 5000000;
+
+            noUiSlider.create(slider, {
+                start: [minVal, maxVal],
+                connect: true,
+                step: 50000,
+                range: {
+                    'min': 100000,
+                    'max': 5000000
+                },
+                format: {
+                    to: value => Math.round(value),
+                    from: value => Number(value)
+                }
+            });
+
+            var minPrice = document.getElementById('min-price');
+            var maxPrice = document.getElementById('max-price');
+
+            // cập nhật UI ban đầu
+            minPrice.textContent = new Intl.NumberFormat('vi-VN').format(minVal) + ' VND';
+            maxPrice.textContent = new Intl.NumberFormat('vi-VN').format(maxVal) + ' VND';
+
+            slider.noUiSlider.on('update', function (values) {
+                minPrice.textContent = new Intl.NumberFormat('vi-VN').format(values[0]) + ' VND';
+                maxPrice.textContent = new Intl.NumberFormat('vi-VN').format(values[1]) + ' VND';
+                minInput.value = values[0];
+                maxInput.value = values[1];
+            });
+        });
+
+    </script>
+
+    <style>
+        /* Tùy chỉnh noUiSlider */
+        .noUi-target {
+            background: #334155;
+            border-radius: 9999px;
+            border: none;
+            height: 8px;
+        }
+
+        .noUi-connect {
+            background: #06b6d4;
+            border-radius: 9999px;
+        }
+
+        .noUi-handle {
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            background: white;
+            border: 3px solid #06b6d4;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+            cursor: grab;
+        }
+
+        .noUi-handle:active {
+            cursor: grabbing;
+            transform: scale(1.1);
+        }
+    </style>
+
+</body>
+
+</html>
