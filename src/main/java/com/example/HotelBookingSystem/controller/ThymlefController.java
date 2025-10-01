@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -89,4 +90,9 @@ public class ThymlefController {
         return "index";
     }
 
+    @GetMapping("/detail/{id}")
+    public String detail(Model model, @PathVariable Integer id) {
+        model.addAttribute("room", roomService.getRoomDetail(id));
+        return "detail"; // trỏ tới file templates/index.html
+    }
 }
