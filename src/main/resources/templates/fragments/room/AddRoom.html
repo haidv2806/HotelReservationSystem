@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Thêm phòng mới</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 p-6">
+
+<div class="max-w-3xl mx-auto bg-white p-6 rounded shadow">
+    <h1 class="text-2xl font-bold mb-6">Thêm phòng mới</h1>
+
+    <form th:action="@{/room/add}" th:object="${room}" method="post" class="grid grid-cols-2 gap-4">
+
+        <!-- Tên phòng -->
+        <div class="col-span-2">
+            <label class="block font-medium mb-1">Tên phòng</label>
+            <input type="text" th:field="*{roomName}"
+                   class="w-full border rounded p-2 focus:ring focus:ring-blue-300" required>
+        </div>
+
+        <!-- Loại phòng -->
+        <div>
+            <label class="block font-medium mb-1">Loại phòng</label>
+            <input type="text" th:field="*{type}"
+                   class="w-full border rounded p-2 focus:ring focus:ring-blue-300" required>
+        </div>
+
+        <!-- Giá phòng -->
+        <div>
+            <label class="block font-medium mb-1">Giá (VNĐ)</label>
+            <input type="number" step="0.01" th:field="*{price}"
+                   class="w-full border rounded p-2 focus:ring focus:ring-blue-300" required>
+        </div>
+
+        <!-- Mô tả -->
+        <div class="col-span-2">
+            <label class="block font-medium mb-1">Mô tả</label>
+            <textarea th:field="*{description}" rows="3"
+                      class="w-full border rounded p-2 focus:ring focus:ring-blue-300"></textarea>
+        </div>
+
+        <!-- Link ảnh -->
+        <div class="col-span-2">
+            <label class="block font-medium mb-1">Ảnh (URL)</label>
+            <input type="text" th:field="*{img}"
+                   class="w-full border rounded p-2 focus:ring focus:ring-blue-300">
+        </div>
+
+        <!-- Trạng thái -->
+        <div class="col-span-2">
+            <label class="block font-medium mb-1">Trạng thái</label>
+            <select th:field="*{status}" class="w-full border rounded p-2 focus:ring focus:ring-blue-300">
+                <option value="available">Available</option>
+                <option value="deleted">Deleted</option>
+            </select>
+        </div>
+
+        <!-- Nút -->
+        <div class="col-span-2 flex justify-between mt-4">
+            <a href="/room" class="bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded">Hủy</a>
+            <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">Lưu</button>
+        </div>
+    </form>
+</div>
+
+</body>
+</html>
