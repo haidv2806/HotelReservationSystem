@@ -149,4 +149,9 @@ public class ThymlefController {
         return "room";
     }
 
+    @GetMapping("/login")
+    public String login(Model model) {
+        return "login";
+    }
+
 }
