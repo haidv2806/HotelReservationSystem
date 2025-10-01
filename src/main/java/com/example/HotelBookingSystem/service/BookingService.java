@@ -1,16 +1,11 @@
 package com.example.HotelBookingSystem.service;
 
 import com.example.HotelBookingSystem.dto.BookingDetailRespone;
-import com.example.HotelBookingSystem.model.Booking;
-import com.example.HotelBookingSystem.model.Customer;
-import com.example.HotelBookingSystem.model.Room;
-import com.example.HotelBookingSystem.model.ManageRoom;
-import com.example.HotelBookingSystem.model.Payment;
-import com.example.HotelBookingSystem.repository.BookingRepository;
-import com.example.HotelBookingSystem.repository.CustomerRepository;
-import com.example.HotelBookingSystem.repository.RoomRepository;
-import com.example.HotelBookingSystem.repository.ManageRoomRepository;
-import com.example.HotelBookingSystem.repository.PaymentRepository;
+import com.example.HotelBookingSystem.dto.BookingRequestDTO;
+import com.example.HotelBookingSystem.dto.BookingResponseDTO;
+import com.example.HotelBookingSystem.mapper.BookingConfirmMapper;
+import com.example.HotelBookingSystem.model.*;
+import com.example.HotelBookingSystem.repository.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -50,6 +45,9 @@ public class BookingService implements BookingServieImpl {
 
     @Autowired
     private ManageRoomRepository manageRoomRepository;
+    //add them
+    @Autowired
+    private  AdminRepository adminRepository;
 
     @Override
     public Optional<Booking> findBooking(Long id) {
@@ -171,4 +169,40 @@ public class BookingService implements BookingServieImpl {
             throw new RuntimeException("Không thể tạo mới booking", e);
         }
     }
+    //phan confirmbooking cua Hieu
+    @Override
+    public List<Booking>getAllBookings(){
+        return bookingRepository.findAll();
+    }
+    @Override
+    public Booking getBookingById(int id) {
+        return bookingRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Booking không tồn tại với id = " + id));
+    }
+
+    @Override
+    public BookingResponseDTO updateBookingStatus(int bookingId, BookingRequestDTO requestDTO) {
+        // 1. Tìm booking
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new RuntimeException("Booking not found with ID: " + bookingId));
+
+
+
+
+
+        // 3. Cập nhật trạng thái & note
+        booking.setStatus(requestDTO.getStatus());
+        if (requestDTO.getNote() != null) {
+            booking.setNote(requestDTO.getNote());
+        }
+
+        Booking updated = bookingRepository.save(booking);
+
+        // 4. Trả về DTO
+        return BookingConfirmMapper.toDTO(updated);
+    }
+
+
+
+
 }
