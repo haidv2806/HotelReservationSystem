@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.10/dayjs.min.js"></script>
+</head>
+<body th:fragment="datepiker">
+    <div class="mt-4">
+        <div class="flex justify-between mb-2">
+            <button id="prevMonth" class="px-3 py-1 bg-gray-400 text-white text-sm rounded-md hover:bg-gray-500 transition-colors duration-200">Previous Month</button>
+            <span id="monthDisplay" class="text-lg font-semibold text-gray-700"></span>
+            <button id="nextMonth" class="px-3 py-1 bg-gray-400 text-white text-sm rounded-md hover:bg-gray-500 transition-colors duration-200">Next Month</button>
+        </div>
+        <div class="grid grid-cols-7 text-center font-semibold border-b pb-2">
+            <div>Mon</div>
+            <div>Tue</div>
+            <div>Wed</div>
+            <div>Thu</div>
+            <div>Fri</div>
+            <div>Sat</div>
+            <div>Sun</div>
+        </div>
+        <div id="calendar" class="grid grid-cols-7 gap-2 mt-2 text-center"></div>
+    </div>
+
+    <!-- Script render calendar -->
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        const blockDates = /*[[${room.blockDate}]]*/ [];
+        const calendarEl = document.getElementById("calendar");
+        const prevMonthBtn = document.getElementById("prevMonth");
+        const nextMonthBtn = document.getElementById("nextMonth");
+        const monthDisplay = document.getElementById("monthDisplay");
+
+        let currentMonthStart = dayjs().startOf("month"); // Bắt đầu từ tháng hiện tại
+        const today = dayjs().startOf("day"); // Ngày hiện tại, bỏ qua giờ phút giây
+
+        function renderCalendar(monthStart) {
+            calendarEl.innerHTML = ""; // Xóa lịch hiện tại
+
+            // Cập nhật hiển thị tháng
+            monthDisplay.textContent = monthStart.format("MMMM YYYY");
+
+            const endOfMonth = monthStart.endOf("month");
+            const daysInMonth = endOfMonth.date();
+            let startDay = monthStart.day();
+            if (startDay === 0) startDay = 7; // dayjs: Sunday = 0, chuyển thành 7
+
+            // Render ô trống trước ngày 1
+            for (let i = 1; i < startDay; i++) {
+                const blank = document.createElement("div");
+                calendarEl.appendChild(blank);
+            }
+
+            // Render ngày trong tháng
+            for (let d = 1; d <= daysInMonth; d++) {
+                const date = monthStart.date(d);
+                const dateStr = date.format("YYYY-MM-DD");
+
+                const cell = document.createElement("div");
+                cell.textContent = d;
+                cell.classList.add("p-2", "rounded");
+
+                // Chặn các ngày từ hôm nay trở về trước hoặc có trong blockDates
+                if (date.isBefore(today, "day") || date.isSame(today, "day") || blockDates.includes(dateStr)) {
+                    cell.classList.add("bg-red-500", "text-white");
+                } else {
+                    cell.classList.add("bg-green-500", "text-white");
+                }
+
+                calendarEl.appendChild(cell);
+            }
+        }
+
+        // Render lịch ban đầu
+        renderCalendar(currentMonthStart);
+
+        // Sự kiện nút Previous Month
+        prevMonthBtn.addEventListener("click", () => {
+            currentMonthStart = currentMonthStart.subtract(1, "month").startOf("month");
+            renderCalendar(currentMonthStart);
+        });
+
+        // Sự kiện nút Next Month
+        nextMonthBtn.addEventListener("click", () => {
+            currentMonthStart = currentMonthStart.add(1, "month").startOf("month");
+            renderCalendar(currentMonthStart);
+        });
+        /*]]>*/
+    </script>
+</body>
+</html>
