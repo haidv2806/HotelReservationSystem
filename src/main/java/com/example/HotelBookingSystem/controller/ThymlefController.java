@@ -15,8 +15,12 @@ import java.util.List;
 
 import org.jsoup.Jsoup;
 
+import com.example.HotelBookingSystem.model.Booking;
+import com.example.HotelBookingSystem.model.ManageRoom;
 import com.example.HotelBookingSystem.model.Room;
+import com.example.HotelBookingSystem.repository.BookingRepository;
 import com.example.HotelBookingSystem.repository.CustomerRepository;
+import com.example.HotelBookingSystem.repository.ManageRoomRepository;
 import com.example.HotelBookingSystem.service.RoomService;
 
 @Controller
@@ -26,6 +30,12 @@ public class ThymlefController {
 
     @Autowired
     private RoomService roomService;
+
+    @Autowired
+    private ManageRoomRepository manageRoomRepository;
+
+            @Autowired
+        private BookingRepository bookingRepository;
 
     @GetMapping("/")
     public String index(Model model,
@@ -99,5 +109,27 @@ public class ThymlefController {
     public String index(Model model) {
         model.addAttribute("customers", customerRepository.findAll());
         return "customer"; // trỏ tới file templates/index.html
+    }
+
+    @GetMapping("/dashboard/manageroom")
+    public String showManageRooms(Model model) {
+        // Lấy tất cả record từ DB
+        List<ManageRoom> manageRooms = manageRoomRepository.findAll();
+        // Truyền xuống view
+        model.addAttribute("managerooms", manageRooms);
+        // Trả về index.html (trong đó có include manageroom.html)
+        return "manageroom";
+    }
+
+        @GetMapping("/dashboard/bookingconfirm")
+    public String showBookings(Model model) {
+        // Lấy tất cả record từ DB
+        List<Booking> bookings = bookingRepository.findAll();
+
+        // Truyền xuống view
+        model.addAttribute("bookings", bookings);
+
+        // Trả về index.html (trong đó có include bookingconfirm.html)
+        return "bookingconfirm";
     }
 }
