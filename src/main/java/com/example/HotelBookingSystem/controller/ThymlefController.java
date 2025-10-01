@@ -1,6 +1,8 @@
 package com.example.HotelBookingSystem.controller;
 import com.example.HotelBookingSystem.model.Booking;
+import com.example.HotelBookingSystem.model.ManageRoom;
 import com.example.HotelBookingSystem.repository.BookingRepository;
+import com.example.HotelBookingSystem.repository.ManageRoomRepository;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -19,11 +21,9 @@ import java.util.List;
 @Controller
 public class ThymlefController {
         @Autowired
-    private CustomerRepository customerRepository;
-        @Autowired
-        private BookingRepository bookingRepository;
+        private ManageRoomRepository manageRoomRepository;
 
-    private static final Logger logger = LoggerFactory.getLogger(ThymlefController.class);
+
 
 //        @GetMapping("/")
 //        public String index(Model model) {
@@ -32,17 +32,12 @@ public class ThymlefController {
 //            return "index";  // trỏ tới file templates/index.html
 //        }
     @GetMapping("/")
-    public String showBookings(Model model) {
+    public String showManageRooms(Model model) {
         // Lấy tất cả record từ DB
-        List<Booking> bookings = bookingRepository.findAll();
-
-        // Log ra console để debug
-        logger.info("Booking count = {}", bookings.size());
-
+        List<ManageRoom> manageRooms = manageRoomRepository.findAll();
         // Truyền xuống view
-        model.addAttribute("bookings", bookings);
-
-        // Trả về index.html (trong đó có include bookingconfirm.html)
+        model.addAttribute("managerooms", manageRooms);
+        // Trả về index.html (trong đó có include manageroom.html)
         return "index";
     }
 }
