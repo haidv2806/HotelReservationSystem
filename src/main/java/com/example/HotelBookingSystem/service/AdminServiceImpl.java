@@ -3,6 +3,7 @@ package com.example.HotelBookingSystem.service;
 import com.example.HotelBookingSystem.model.Admin;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import java.util.Optional;
 

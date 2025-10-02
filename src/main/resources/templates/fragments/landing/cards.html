@@ -4,75 +4,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <title>Card</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Danh sách phòng</title>
 </head>
 
-<body th:fragment="cards">
-    <div id="cards"
-        class="grid grid-cols-4 gap-6 p-6 block bg-sky-600 rounded-xl shadow-md hover:shadow-lg transition overflow-hidden">
-        <div th:each="r : ${rooms}"
-            class="block bg-white rounded-xl shadow-md hover:shadow-lg transition overflow-hidden">
-            <li class="w-full min-w-[220px] ">
-                <a th:href="@{/detail/{roomId}(roomId=${r.roomId}, checkInDate=${checkInDate}, checkOutDate=${checkOutDate})}" target="_blank">
+<body th:fragment="cards" class="bg-sky-900 p-6">
 
-                    <!-- Ảnh với aspect ratio -->
-                    <div class=" w-full ">
-                        <img th:src="${r.img}" class="w-full h-full  object-cover rounded-t-xl aspect-[2/2]" />
-                    </div>
+<div id="cards" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
 
-                    <!-- Nội dung -->
-                    <div class="p-4 space-y-2">
-                        <!-- Badge Loại phòng -->
-                        <span class="inline-block bg-blue-700 text-white text-xs font-bold px-2 py-1 rounded"
-                            th:text="${r.type}"> </span>
+    <div th:each="r : ${rooms}" class="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition overflow-hidden">
+        <a th:href="@{/detail/{roomId}(roomId=${r.roomId})}" class="block">
+            <!-- Ảnh -->
+            <div class="w-full h-48 overflow-hidden rounded-t-2xl">
+                <img th:src="${r.img}" class="w-full h-full object-cover transition-transform duration-300 hover:scale-110"/>
+            </div>
 
-                        <!-- tên phòng -->
-                        <h3 class="text-lg font-semibold text-gray-900 line-clamp-2" th:text="${r.roomName}">
-                        </h3>
+            <!-- Nội dung -->
+            <div class="p-5 space-y-2">
+                <!-- Badge Loại phòng -->
+                <span class="inline-block bg-cyan-500 text-white text-xs font-bold px-3 py-1 rounded-full"
+                      th:text="${r.type}">Loại</span>
 
-                        <!-- mô tả vắn tắt -->
-                        <p class="text-sm text-gray-500 line-clamp-3"
-                            th:text="${#strings.replace(r.description, '<p>', '')}">
-                        </p>
+                <!-- Tên phòng -->
+                <h3 class="text-xl font-bold text-gray-900 line-clamp-2" th:text="${r.roomName}">Tên phòng</h3>
 
+                <!-- Mô tả vắn tắt -->
+                <p class="text-gray-600 text-sm line-clamp-3"
+                   th:text="${#strings.replace(r.description, '<p>', '')}">Mô tả phòng...</p>
 
-                        <!-- Giá -->
-                        <div class=" mt-2 flex items-center justify-between">
-                            <span class="text-xs text-gray-500">1 đêm</span>
-                            <span class="text-lg font-bold text-red-600"
-                                th:text="${#numbers.formatInteger(r.price, 3, 'POINT')} + ' VND'">
-                            </span>
-                        </div>
-                    </div>
-                </a>
-            </li>
-        </div>
-
+                <!-- Giá -->
+                <div class="mt-3 flex items-center justify-between">
+                    <span class="text-gray-500 text-sm">1 đêm</span>
+                    <span class="text-red-600 text-lg font-bold"
+                          th:text="${#numbers.formatInteger(r.price, 3, 'POINT')} + ' VND'">0 VND</span>
+                </div>
+            </div>
+        </a>
     </div>
 
-    <!-- Phân trang -->
-    <div class="flex justify-center mt-6 space-x-2">
-        <!-- Previous -->
-        <a th:if="${currentPage > 0}"
-            th:href="@{/searchRoom(roomType=${roomType}, checkInDate=${checkInDate}, checkOutDate=${checkOutDate}, minPrice=${minPrice}, maxPrice=${maxPrice}, page=${currentPage - 1}, size=10)} + '#cards'"
-            class="px-4 py-2 bg-gray-300 text-black rounded hover:bg-gray-400 transition">
-            ← Previous
-        </a>
+</div>
 
-        <!-- Page info -->
-        <span class="px-4 py-2 bg-white border rounded text-gray-700">
-            Page <span th:text="${currentPage + 1}"></span> /
-            <span th:text="${totalPages}"></span>
+<!-- Phân trang -->
+<div class="flex justify-center mt-8 space-x-3">
+    <a th:if="${currentPage > 0}"
+       th:href="@{/searchRoom(roomType=${roomType}, checkInDate=${checkInDate}, checkOutDate=${checkOutDate}, minPrice=${minPrice}, maxPrice=${maxPrice}, page=${currentPage - 1}, size=10)} + '#cards'"
+       class="px-4 py-2 bg-cyan-500 text-white rounded-lg hover:bg-cyan-600 transition">← Previous</a>
+
+    <span class="px-4 py-2 bg-white border rounded-lg text-gray-700">
+            Page <span th:text="${currentPage + 1}"></span> / <span th:text="${totalPages}"></span>
         </span>
 
-        <!-- Next -->
-        <a th:if="${currentPage < totalPages - 1}"
-            th:href="@{/searchRoom(roomType=${roomType}, checkInDate=${checkInDate}, checkOutDate=${checkOutDate}, minPrice=${minPrice}, maxPrice=${maxPrice}, page=${currentPage + 1}, size=10)} + '#cards'"
-            class="px-4 py-2 bg-gray-300 text-black rounded hover:bg-gray-400 transition">
-            Next →
-        </a>
-    </div>
+    <a th:if="${currentPage < totalPages - 1}"
+       th:href="@{/searchRoom(roomType=${roomType}, checkInDate=${checkInDate}, checkOutDate=${checkOutDate}, minPrice=${minPrice}, maxPrice=${maxPrice}, page=${currentPage + 1}, size=10)} + '#cards'"
+       class="px-4 py-2 bg-cyan-500 text-white rounded-lg hover:bg-cyan-600 transition">Next →</a>
+</div>
 
 </body>
 

@@ -105,16 +105,16 @@ public class ThymlefController {
         return "index";
     }
 
-//    @GetMapping("/detail/{id}")
-//    public String detail(Model model, @PathVariable Integer id) {
-//        model.addAttribute("room", roomService.getRoomDetail(id));
-//        return "detail"; // trỏ tới file templates/index.html
-//    }
     @GetMapping("/detail/{id}")
-    public String detail(Model model,
-                         @PathVariable Integer id,
-                         @RequestParam(required = false) String checkInDate,
-                         @RequestParam(required = false) String checkOutDate) {
+    public String detail(Model model, @PathVariable Integer id) {
+        model.addAttribute("room", roomService.getRoomDetail(id));
+        return "detail"; // trỏ tới file templates/index.html
+    }
+    @GetMapping("/detailbooking/{id}")
+    public String detailBooking(Model model,
+                                @PathVariable Integer id,
+                                @RequestParam(required = false) String checkInDate,
+                                @RequestParam(required = false) String checkOutDate) {
         // Lấy thông tin phòng
         com.example.HotelBookingSystem.dto.RoomDetailResponse room = roomService.getRoomDetail(id);
         model.addAttribute("room", room);
@@ -123,16 +123,23 @@ public class ThymlefController {
         model.addAttribute("checkInDate", checkInDate != null ? checkInDate : LocalDate.now().toString());
         model.addAttribute("checkOutDate", checkOutDate != null ? checkOutDate : LocalDate.now().plusDays(1).toString());
 
-        return "booking_user"; // trỏ tới file chi tiết + form booking
-    }
-    // Trang đặt phòng
-    @GetMapping("/booking_user")
-    public String bookingPage(@RequestParam Integer roomId, Model model) {
-        com.example.HotelBookingSystem.dto.RoomDetailResponse room = roomService.getRoomDetail(roomId);
-        model.addAttribute("room", room);
-        return "booking_user";
+        return "booking_user"; // trỏ tới file booking_user.html
     }
 
+    // Trang booking trực tiếp từ link /booking_user?roomId=xxx&checkInDate=xxx&checkOutDate=xxx
+    @GetMapping("/booking_user")
+    public String bookingPage(@RequestParam Integer roomId,
+                              @RequestParam(required = false) String checkInDate,
+                              @RequestParam(required = false) String checkOutDate,
+                              Model model) {
+        com.example.HotelBookingSystem.dto.RoomDetailResponse room = roomService.getRoomDetail(roomId);
+        model.addAttribute("room", room);
+
+        model.addAttribute("checkInDate", checkInDate != null ? checkInDate : LocalDate.now().toString());
+        model.addAttribute("checkOutDate", checkOutDate != null ? checkOutDate : LocalDate.now().plusDays(1).toString());
+
+        return "booking_user";
+    }
     @GetMapping("/dashboard/cusomer")
     public String index(Model model) {
         model.addAttribute("customers", customerRepository.findAll());

@@ -186,19 +186,18 @@ public class BookingService implements BookingServieImpl {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new RuntimeException("Booking not found with ID: " + bookingId));
 
+        if (requestDTO.getStatus() != null) {
+            // 1. Nếu DTO là enum:
+            booking.setStatus(requestDTO.getStatus());
+            // 2. Nếu DTO là String, dùng:
+            // booking.setStatus(Booking.Status.valueOf(requestDTO.getStatus()));
+        }
 
-
-
-
-        // 3. Cập nhật trạng thái & note
-        booking.setStatus(requestDTO.getStatus());
         if (requestDTO.getNote() != null) {
             booking.setNote(requestDTO.getNote());
         }
 
         Booking updated = bookingRepository.save(booking);
-
-        // 4. Trả về DTO
         return BookingConfirmMapper.toDTO(updated);
     }
 

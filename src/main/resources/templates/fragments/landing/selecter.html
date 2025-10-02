@@ -9,137 +9,124 @@
     <script src="https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.js"></script>
 </head>
 
-<body th:fragment="selecter" class="flex items-center justify-center min-h-screen bg-sky-900">
+<body th:fragment="selecter" class="flex items-center justify-center min-h-screen bg-gradient-to-r from-sky-700 to-cyan-600">
 
-    <form action="/searchRoom" method="get" class="bg-sky-600 p-6 rounded-xl shadow-lg w-full text-white">
+<form action="/searchRoom" method="get"
+      class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-full mx-auto text-gray-800">
 
-        <div class="flex justify-between items-center mb-6">
-            <h2 class="text-2xl font-bold">Tìm kiếm phòng</h2>
+    <div class="flex flex-col md:flex-row md:justify-between md:items-center mb-8">
+        <h2 class="text-3xl font-bold text-sky-800 mb-4 md:mb-0">Tìm kiếm phòng</h2>
+        <button type="submit"
+                class="px-8 py-3 bg-cyan-500 text-white rounded-xl font-semibold hover:bg-cyan-600 transition shadow-md">
+            Tìm kiếm
+        </button>
+    </div>
 
-            <!-- Nút tìm kiếm -->
-            <div>
-                <button type="submit"
-                    class="px-6 py-3 bg-cyan-500 text-white rounded-lg font-semibold hover:bg-cyan-600 transition">
-                    Tìm kiếm
-                </button>
-            </div>
+    <div class="grid grid-cols-1 md:grid-cols-5 gap-6">
+
+        <!-- Loại phòng -->
+        <div class="flex flex-col">
+            <label class="mb-2 font-semibold text-sky-700">Loại phòng</label>
+            <select name="roomType"
+                    class="w-full border border-cyan-400 rounded-xl px-3 py-2 focus:ring-2 focus:ring-cyan-400 text-gray-800">
+                <option value="" th:selected="${roomType == null}">Tất cả</option>
+                <option value="Single" th:selected="${roomType == 'Single'}">Single</option>
+                <option value="Double" th:selected="${roomType == 'Double'}">Double</option>
+                <option value="Twin" th:selected="${roomType == 'Twin'}">Twin</option>
+                <option value="Deluxe" th:selected="${roomType == 'Deluxe'}">Deluxe</option>
+                <option value="VIP" th:selected="${roomType == 'VIP'}">VIP</option>
+            </select>
         </div>
 
-        <!-- Tất cả trong 1 hàng -->
-        <div class="flex flex-wrap items-end gap-10">
-
-            <!-- Loại phòng -->
-            <div class="flex-1 min-w-[150px]">
-                <label class="block mb-2">Loại phòng</label>
-                <select name="roomType"
-                    class="w-full bg-cyan-500 text-white border border-cyan-400 rounded-lg p-2 focus:ring-2 focus:ring-cyan-400">
-                    <option value="" th:selected="${roomType == null}">Tất cả</option>
-                    <option value="Single" th:selected="${roomType == 'Single'}">Single</option>
-                    <option value="Double" th:selected="${roomType == 'Double'}">Double</option>
-                    <option value="Twin" th:selected="${roomType == 'Twin'}">Twin</option>
-                    <option value="Deluxe" th:selected="${roomType == 'Deluxe'}">Deluxe</option>
-                    <option value="VIP" th:selected="${roomType == 'VIP'}">VIP</option>
-                </select>
-            </div>
-
-            <!-- Check-in -->
-            <div class="flex-1 min-w-[150px]">
-                <label class="block mb-2">Ngày nhận phòng</label>
-                <input type="date" name="checkInDate" th:value="${checkInDate}"
-                    class="w-full bg-cyan-500 text-white border border-cyan-400 rounded-lg p-2 focus:ring-2 focus:ring-cyan-400">
-            </div>
-
-            <!-- Check-out -->
-            <div class="flex-1 min-w-[150px]">
-                <label class="block mb-2">Ngày trả phòng</label>
-                <input type="date" name="checkOutDate" th:value="${checkOutDate}"
-                    class="w-full bg-cyan-500 text-white border border-cyan-400 rounded-lg p-2 focus:ring-2 focus:ring-cyan-400">
-            </div>
-
-            <!-- Thanh kéo chọn giá -->
-            <div class="flex-1 min-w-[200px]">
-                <label class="block mb-2">Khoảng giá (VND / đêm)</label>
-                <div class="flex items-center text-sm font-semibold mb-2">
-                    <div id="min-price" class="text-center min-w-28">100,000 VND</div>
-                    <span class="px-2">-</span>
-                    <div id="max-price" class="text-center min-w-28">5,000,000 VND</div>
-                </div>
-                <div id="price-slider" class="w-full h-2"></div>
-                <input type="hidden" name="minPrice" id="minPriceInput" th:value="${minPrice}">
-                <input type="hidden" name="maxPrice" id="maxPriceInput" th:value="${maxPrice}">
-            </div>
+        <!-- Check-in -->
+        <div class="flex flex-col">
+            <label class="mb-2 font-semibold text-sky-700">Ngày nhận phòng</label>
+            <input type="date" name="checkInDate" th:value="${checkInDate}"
+                   class="w-full border border-cyan-400 rounded-xl px-3 py-2 focus:ring-2 focus:ring-cyan-400">
         </div>
-    </form>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            var slider = document.getElementById('price-slider');
-            var minInput = document.getElementById('minPriceInput');
-            var maxInput = document.getElementById('maxPriceInput');
+        <!-- Check-out -->
+        <div class="flex flex-col">
+            <label class="mb-2 font-semibold text-sky-700">Ngày trả phòng</label>
+            <input type="date" name="checkOutDate" th:value="${checkOutDate}"
+                   class="w-full border border-cyan-400 rounded-xl px-3 py-2 focus:ring-2 focus:ring-cyan-400">
+        </div>
 
-            var minVal = parseInt(minInput.value) || 100000;
-            var maxVal = parseInt(maxInput.value) || 5000000;
+        <!-- Khoảng giá -->
+        <div class="flex flex-col col-span-2">
+            <label class="mb-2 font-semibold text-sky-700">Khoảng giá (VND / đêm)</label>
+            <div class="flex items-center text-sm font-semibold mb-2 gap-2">
+                <div id="min-price" class="flex-1 text-center bg-sky-100 rounded-xl py-1">100,000 VND</div>
+                <span class="px-2">-</span>
+                <div id="max-price" class="flex-1 text-center bg-sky-100 rounded-xl py-1">5,000,000 VND</div>
+            </div>
+            <div id="price-slider" class="w-full h-3 mt-1 rounded-xl"></div>
+            <input type="hidden" name="minPrice" id="minPriceInput" th:value="${minPrice}">
+            <input type="hidden" name="maxPrice" id="maxPriceInput" th:value="${maxPrice}">
+        </div>
+    </div>
+</form>
 
-            noUiSlider.create(slider, {
-                start: [minVal, maxVal],
-                connect: true,
-                step: 50000,
-                range: {
-                    'min': 100000,
-                    'max': 5000000
-                },
-                format: {
-                    to: value => Math.round(value),
-                    from: value => Number(value)
-                }
-            });
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var slider = document.getElementById('price-slider');
+        var minInput = document.getElementById('minPriceInput');
+        var maxInput = document.getElementById('maxPriceInput');
 
-            var minPrice = document.getElementById('min-price');
-            var maxPrice = document.getElementById('max-price');
+        var minVal = parseInt(minInput.value) || 100000;
+        var maxVal = parseInt(maxInput.value) || 5000000;
 
-            // cập nhật UI ban đầu
-            minPrice.textContent = new Intl.NumberFormat('vi-VN').format(minVal) + ' VND';
-            maxPrice.textContent = new Intl.NumberFormat('vi-VN').format(maxVal) + ' VND';
-
-            slider.noUiSlider.on('update', function (values) {
-                minPrice.textContent = new Intl.NumberFormat('vi-VN').format(values[0]) + ' VND';
-                maxPrice.textContent = new Intl.NumberFormat('vi-VN').format(values[1]) + ' VND';
-                minInput.value = values[0];
-                maxInput.value = values[1];
-            });
+        noUiSlider.create(slider, {
+            start: [minVal, maxVal],
+            connect: true,
+            step: 50000,
+            range: { 'min': 100000, 'max': 5000000 },
+            format: { to: value => Math.round(value), from: value => Number(value) }
         });
 
-    </script>
+        var minPrice = document.getElementById('min-price');
+        var maxPrice = document.getElementById('max-price');
 
-    <style>
-        /* Tùy chỉnh noUiSlider */
-        .noUi-target {
-            background: #334155;
-            border-radius: 9999px;
-            border: none;
-            height: 8px;
-        }
+        minPrice.textContent = new Intl.NumberFormat('vi-VN').format(minVal) + ' VND';
+        maxPrice.textContent = new Intl.NumberFormat('vi-VN').format(maxVal) + ' VND';
 
-        .noUi-connect {
-            background: #06b6d4;
-            border-radius: 9999px;
-        }
+        slider.noUiSlider.on('update', function (values) {
+            minPrice.textContent = new Intl.NumberFormat('vi-VN').format(values[0]) + ' VND';
+            maxPrice.textContent = new Intl.NumberFormat('vi-VN').format(values[1]) + ' VND';
+            minInput.value = values[0];
+            maxInput.value = values[1];
+        });
+    });
+</script>
 
-        .noUi-handle {
-            height: 20px;
-            width: 20px;
-            border-radius: 50%;
-            background: white;
-            border: 3px solid #06b6d4;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
-            cursor: grab;
-        }
+<style>
+    .noUi-target {
+        background: #e0f2fe;
+        border-radius: 9999px;
+        border: none;
+        height: 8px;
+    }
 
-        .noUi-handle:active {
-            cursor: grabbing;
-            transform: scale(1.1);
-        }
-    </style>
+    .noUi-connect {
+        background: #06b6d4;
+        border-radius: 9999px;
+    }
+
+    .noUi-handle {
+        height: 22px;
+        width: 22px;
+        border-radius: 50%;
+        background: white;
+        border: 3px solid #06b6d4;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+        cursor: grab;
+    }
+
+    .noUi-handle:active {
+        cursor: grabbing;
+        transform: scale(1.1);
+    }
+</style>
 
 </body>
 
