@@ -16,7 +16,8 @@
             <!-- Hình ảnh + nút -->
             <div class="col-span-1 flex flex-col items-center">
                 <img th:src="@{${room.img}}" alt="Ảnh phòng" class="w-full h-full object-cover rounded-lg border">
-                <button class="mt-4 bg-green-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                <button th:onclick="'location.href=\'/booking_user?roomId=' + ${room.roomId} + '\';'"
+                        class="mt-4 bg-green-500 text-white px-4 py-2 rounded hover:bg-blue-600">
                     Đặt phòng
                 </button>
             </div>

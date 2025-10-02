@@ -4,6 +4,7 @@ import com.example.HotelBookingSystem.model.Booking;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import com.example.HotelBookingSystem.model.Room;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -25,4 +26,5 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
     boolean existsByRoomAndDateRange(@Param("room") Room room,
                                      @Param("checkinDate") LocalDate checkinDate,
                                      @Param("checkoutDate") LocalDate checkoutDate);
+
 }

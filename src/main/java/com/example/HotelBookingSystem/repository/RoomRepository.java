@@ -5,6 +5,7 @@ import com.example.HotelBookingSystem.model.Room;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -44,5 +45,7 @@ public interface RoomRepository extends JpaRepository<Room, Integer> {
             @Param("maxPrice") BigDecimal maxPrice,
             @Param("status") Room.Status status,
             Pageable pageable);
+    List<Room> findByStatus(Room.Status status);
 
 }
+

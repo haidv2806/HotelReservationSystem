@@ -1,0 +1,126 @@
+<!-- booking_user.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Đặt phòng & Thanh toán</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+
+<div class="max-w-6xl mx-auto bg-white shadow-lg rounded-2xl p-8 mt-6">
+
+    <h1 class="text-2xl font-bold text-center mb-8 text-blue-600">ĐẶT PHÒNG KHÁCH SẠN</h1>
+
+    <div class="grid grid-cols-2 gap-8">
+
+        <!-- Thông tin phòng -->
+        <div class="border rounded-lg p-6 bg-gray-50">
+            <h2 class="text-lg font-semibold mb-4">THÔNG TIN PHÒNG</h2>
+            <p class="text-blue-600 font-bold mb-4" th:text="${room.roomName}">Tên phòng</p>
+            <div class="flex space-x-4 mb-4">
+                <img th:src="@{${room.img}}" alt="Room Image" class="w-40 h-40 bg-gray-200 rounded-md"/>
+            </div>
+            <p class="text-green-600 font-bold mb-2"
+               th:text="${#numbers.formatDecimal(room.price,0,'POINT',0,'COMMA')} + ' VND'">0 VND</p>
+            <p class="text-sm text-gray-600 mt-2">Nhận: <span th:text="${checkInDate}">-</span></p>
+            <p class="text-sm text-gray-600">Trả: <span th:text="${checkOutDate}">-</span></p>
+        </div>
+
+        <!-- Form khách hàng -->
+        <div class="border rounded-lg p-6 bg-gray-50">
+            <h2 class="text-lg font-semibold mb-4">THÔNG TIN KHÁCH HÀNG</h2>
+            <form id="bookingForm" th:action="@{/api/booking}" method="post">
+                <input type="hidden" name="roomId" th:value="${room.roomId}" />
+                <input type="hidden" name="checkIn" th:value="${checkInDate}" />
+                <input type="hidden" name="checkOut" th:value="${checkOutDate}" />
+
+                <div>
+                    <label class="block mb-1">Họ tên</label>
+                    <input name="customerName" type="text" required class="w-full border rounded-lg px-3 py-2"/>
+                </div>
+                <div>
+                    <label class="block mb-1">Số điện thoại</label>
+                    <input name="phone" type="text" required class="w-full border rounded-lg px-3 py-2"/>
+                </div>
+                <div>
+                    <label class="block mb-1">Ghi chú</label>
+                    <textarea name="note" class="w-full border rounded-lg px-3 py-2"></textarea>
+                </div>
+                <div>
+                    <label class="block mb-1">Phương thức thanh toán</label>
+                    <select name="paymentMethod" class="w-full border rounded-lg px-3 py-2">
+                        <option value="CASH">Tiền mặt</option>
+                        <option value="CARD">Thẻ</option>
+                        <option value="ONLINE">Chuyển khoản (QR)</option>
+                        <option value="VOUCHER">Voucher</option>
+                    </select>
+                </div>
+                <button type="submit"
+                        class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition">
+                    Xác nhận
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- QR Code -->
+    <div class="mt-8 border rounded-lg p-6 bg-gray-50 text-center hidden" id="qrBox">
+        <h3 class="text-xl font-semibold mb-4 text-gray-800">QR THANH TOÁN</h3>
+        <img id="qrCode" src="" alt="QR Code" class="w-48 h-48 mx-auto border rounded shadow">
+        <p class="text-sm mt-4 text-gray-600">Sau khi chuyển khoản, chúng tôi sẽ xác nhận sau.</p>
+    </div>
+
+</div>
+
+<script>
+    const form = document.getElementById("bookingForm");
+
+    form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData(form);
+        const req = {
+            roomId: formData.get("roomId"),
+            checkIn: formData.get("checkIn"),
+            checkOut: formData.get("checkOut"),
+            customerName: formData.get("customerName"),
+            phone: formData.get("phone"),
+            note: formData.get("note"),
+            paymentMethod: formData.get("paymentMethod")
+        };
+
+        try {
+            const res = await fetch("/api/booking", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify(req)
+            });
+
+            if (!res.ok) throw new Error("Có lỗi xảy ra khi đặt phòng");
+
+            const data = await res.json();
+
+            // Kiểm tra nếu phương thức ONLINE thì hiện QR
+            if (req.paymentMethod === "ONLINE" && data.qrcode) {
+                const qrBox = document.getElementById("qrBox");
+                const qrImg = document.getElementById("qrCode");
+
+                qrImg.src = data.qrcode;  // sử dụng đúng key
+                qrBox.classList.remove("hidden");
+
+                // Cuộn xuống QR
+                qrBox.scrollIntoView({behavior: "smooth"});
+            }
+
+            alert("Thông tin đã được gửi đi!");
+
+        } catch (err) {
+            console.error(err);
+            alert(err.message);
+        }
+    });
+</script>
+
+</body>
+</html>

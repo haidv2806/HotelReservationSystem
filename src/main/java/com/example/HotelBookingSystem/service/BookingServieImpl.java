@@ -29,4 +29,5 @@ public interface BookingServieImpl {
     List<Booking> getAllBookings();
     Booking getBookingById(int id);
     BookingResponseDTO updateBookingStatus(int bookingId, BookingRequestDTO requestDTO);
+
 }

@@ -5,6 +5,7 @@ import java.util.List;
 import java.time.LocalDate;
 
 public class RoomDetailResponse {
+    private Integer roomId;
     private String roomName;
     private String description;
     private String img;
@@ -12,14 +13,23 @@ public class RoomDetailResponse {
     private Double price;
     private List<LocalDate> blockDate;
 
-    public RoomDetailResponse(String roomName, String description, String img, String type, Double price,
+    public RoomDetailResponse(Integer roomId ,String roomName, String description, String img, String type, Double price,
             List<LocalDate> blockDate) {
+        this.roomId =roomId;
         this.roomName = roomName;
         this.description = description;
         this.img = img;
         this.type = type;
         this.price = price;
         this.blockDate = blockDate;
+    }
+
+    public Integer getRoomId() {
+        return roomId;
+    }
+
+    public void setRoomId(Integer roomId) {
+        this.roomId = roomId;
     }
 
     // Getters

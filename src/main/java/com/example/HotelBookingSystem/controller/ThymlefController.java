@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import java.math.BigDecimal;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -103,10 +105,32 @@ public class ThymlefController {
         return "index";
     }
 
+//    @GetMapping("/detail/{id}")
+//    public String detail(Model model, @PathVariable Integer id) {
+//        model.addAttribute("room", roomService.getRoomDetail(id));
+//        return "detail"; // trỏ tới file templates/index.html
+//    }
     @GetMapping("/detail/{id}")
-    public String detail(Model model, @PathVariable Integer id) {
-        model.addAttribute("room", roomService.getRoomDetail(id));
-        return "detail"; // trỏ tới file templates/index.html
+    public String detail(Model model,
+                         @PathVariable Integer id,
+                         @RequestParam(required = false) String checkInDate,
+                         @RequestParam(required = false) String checkOutDate) {
+        // Lấy thông tin phòng
+        com.example.HotelBookingSystem.dto.RoomDetailResponse room = roomService.getRoomDetail(id);
+        model.addAttribute("room", room);
+
+        // Nếu không có ngày gửi từ query param thì dùng mặc định
+        model.addAttribute("checkInDate", checkInDate != null ? checkInDate : LocalDate.now().toString());
+        model.addAttribute("checkOutDate", checkOutDate != null ? checkOutDate : LocalDate.now().plusDays(1).toString());
+
+        return "booking_user"; // trỏ tới file chi tiết + form booking
+    }
+    // Trang đặt phòng
+    @GetMapping("/booking_user")
+    public String bookingPage(@RequestParam Integer roomId, Model model) {
+        com.example.HotelBookingSystem.dto.RoomDetailResponse room = roomService.getRoomDetail(roomId);
+        model.addAttribute("room", room);
+        return "booking_user";
     }
 
     @GetMapping("/dashboard/cusomer")
@@ -153,5 +177,6 @@ public class ThymlefController {
     public String login(Model model) {
         return "login";
     }
+
 
 }

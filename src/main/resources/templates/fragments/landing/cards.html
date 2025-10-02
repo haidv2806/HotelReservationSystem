@@ -14,7 +14,7 @@
         <div th:each="r : ${rooms}"
             class="block bg-white rounded-xl shadow-md hover:shadow-lg transition overflow-hidden">
             <li class="w-full min-w-[220px] ">
-                <a th:href="@{/detail/{roomId}(roomId=${r.roomId})}" target="_blank">
+                <a th:href="@{/detail/{roomId}(roomId=${r.roomId}, checkInDate=${checkInDate}, checkOutDate=${checkOutDate})}" target="_blank">
 
                     <!-- Ảnh với aspect ratio -->
                     <div class=" w-full ">

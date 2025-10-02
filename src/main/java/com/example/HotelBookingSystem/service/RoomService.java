@@ -122,6 +122,7 @@ public class RoomService implements RoomServiceImpl {
 
         // Tạo dto từ entity Room
         RoomDetailResponse res = new RoomDetailResponse(
+                room.getRoomId(),
                 room.getRoomName(),
                 room.getDescription(),
                 room.getImg(),
@@ -176,5 +177,8 @@ public class RoomService implements RoomServiceImpl {
             return "Không tồn tại phòng";
         }
     }
+
+
+
 }
 
