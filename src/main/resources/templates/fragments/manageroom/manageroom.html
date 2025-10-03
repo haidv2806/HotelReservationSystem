@@ -34,8 +34,8 @@
                     <select th:id="'status-' + ${m.manageRoomId}"
                         th:onchange="'changeManageRoomStatus(' + ${m.manageRoomId} + ', this.value)'"
                         class="border rounded px-2 py-1">
-                        <option value="CLEANING" th:selected="${m.status == 'CLEANING'}">CLEANING</option>
-                        <option value="MAINTAINCE" th:selected="${m.status == 'MAINTAINCE'}">MAINTAINCE</option>
+                        <option value="CLEANING" th:selected="${m.status.name() == 'CLEANING'}">CLEANING</option>
+                        <option value="MAINTAINCE" th:selected="${m.status.name() == 'MAINTAINCE'}">MAINTAINCE</option>
                     </select>
                 </td>
             </tr>
@@ -43,23 +43,29 @@
     </table>
     <script>
         async function changeManageRoomStatus(manageRoomId, status) {
-            const body = { manageRoomId: manageRoomId, status: status };
+            const body = { status: status };
             console.log("Sending body:", body);
 
-            const response = await fetch('/api/manageroom/status', {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(body)
-            });
+            try {
+                 const response = await fetch(`/api/manage-rooms/update/${manageRoomId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
 
-            if (response.ok) {
-                location.reload();
-            } else {
-                const err = await response.text();
-                alert("Cập nhật thất bại: " + err);
+                if (response.ok) {
+                    location.reload();
+                } else {
+                    const err = await response.text();
+                    alert("Cập nhật thất bại: " + err);
+                }
+            } catch (error) {
+                console.error(error);
+                alert("Lỗi khi gửi request");
             }
         }
     </script>
+
 
 </body>
 

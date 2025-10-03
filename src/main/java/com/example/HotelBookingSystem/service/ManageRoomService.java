@@ -89,18 +89,20 @@ public class ManageRoomService implements ManageRoomServiceImpl {
             throw new RuntimeException("Room already has schedule or booking in this date range");
         }
 
-        Room room = roomRepo.findById(dto.getRoomId()).orElseThrow(() -> new RuntimeException("Room not found"));
-
         m.setStartDate(dto.getStartDate());
         m.setEndDate(dto.getEndDate());
         m.setNote(dto.getNote());
-        m.setStatus(dto.getStatus());
-        m.setRoom(room);
-
 
         return toDTO(manageRoomRepo.save(m));
     }
 
+    @Override
+    public ManageRoomDTO updateStatus (Integer id, ManageRoom.Status status ){
+        ManageRoom manageRoom = manageRoomRepo.findById(id).orElseThrow(()-> new RuntimeException("Not found"));
+        manageRoom.setStatus(status);
+
+        return  toDTO(manageRoomRepo.save(manageRoom));
+    }
 
     @Override
     public void delete(Integer id) {

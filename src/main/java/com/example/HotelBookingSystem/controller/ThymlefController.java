@@ -1,13 +1,14 @@
 package com.example.HotelBookingSystem.controller;
 
+import com.example.HotelBookingSystem.dto.BookingResponseDTO;
+import com.example.HotelBookingSystem.service.BookingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -23,6 +24,7 @@ import com.example.HotelBookingSystem.repository.CustomerRepository;
 import com.example.HotelBookingSystem.repository.ManageRoomRepository;
 import com.example.HotelBookingSystem.repository.RoomRepository;
 import com.example.HotelBookingSystem.service.RoomService;
+import org.springframework.web.servlet.ModelAndView;
 
 @Controller
 public class ThymlefController {
@@ -40,6 +42,8 @@ public class ThymlefController {
 
     @Autowired
     private RoomRepository roomRepository;
+    @Autowired
+    private BookingService bookingService;
 
     @GetMapping("/")
     public String index(Model model,
@@ -125,17 +129,27 @@ public class ThymlefController {
         return "manageroom";
     }
 
-    @GetMapping("/dashboard/bookingconfirm")
-    public String showBookings(Model model) {
-        // Lấy tất cả record từ DB
-        List<Booking> bookings = bookingRepository.findAll();
+//    @GetMapping("/dashboard/bookingconfirm")
+//    public ModelAndView showBookings(
+//            @RequestParam(defaultValue = "0") int page,
+//            @RequestParam(defaultValue = "10") int size,
+//            @RequestParam(defaultValue = "idBooking") String sortField,
+//            @RequestParam(defaultValue = "asc") String sortDir,
+//            @RequestParam(required = false) String roomName,
+//            @RequestParam(required = false) String customerName,
+//            @RequestParam(required = false) String customerPhone
+//    ) {
+//        Page<Booking> bookingPage = bookingService.
+//        // ví dụ filter theo note
+//        // Lấy tất cả record từ DB
+//        List<Booking> bookings = bookingRepository.findAll();
+//        // Truyền xuống view
+//        model.addAttribute("bookings", bookings);
+//        // Trả về index.html (trong đó có include bookingconfirm.html)
+//        return "bookingconfirm";
+//    }
 
-        // Truyền xuống view
-        model.addAttribute("bookings", bookings);
 
-        // Trả về index.html (trong đó có include bookingconfirm.html)
-        return "bookingconfirm";
-    }
 
     @GetMapping("/dashboard/room")
     public String showRooms(Model model) {

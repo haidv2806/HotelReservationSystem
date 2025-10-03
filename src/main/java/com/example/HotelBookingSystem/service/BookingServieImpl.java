@@ -27,6 +27,9 @@ public interface BookingServieImpl {
     BookingDetailRespone create(Integer roomId, String customerName, String Phone, LocalDate checkIn, LocalDate checkOut, String note, Payment.PaymentMethod paymentMethod);
     // phan bookingconfirm Hieu
     List<Booking> getAllBookings();
+    Page<BookingResponseDTO>getAllBookingsPaginated(LocalDate start, LocalDate end,
+                                                    String search,
+                                                    Pageable pageable);
     Booking getBookingById(int id);
     BookingResponseDTO updateBookingStatus(int bookingId, BookingRequestDTO requestDTO);
 }

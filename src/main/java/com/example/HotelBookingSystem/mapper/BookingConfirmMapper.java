@@ -16,8 +16,6 @@ public class BookingConfirmMapper {
         dto.setTotalPrice(booking.getTotalPrice());
         dto.setStatus(booking.getStatus().name());
 
-
-
         return dto;
     }
 }

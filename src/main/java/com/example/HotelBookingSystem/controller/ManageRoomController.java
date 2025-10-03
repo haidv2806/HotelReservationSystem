@@ -1,5 +1,6 @@
 package com.example.HotelBookingSystem.controller;
 
+import com.example.HotelBookingSystem.dto.BookingResponseDTO;
 import com.example.HotelBookingSystem.dto.ManageRoomDTO;
 import com.example.HotelBookingSystem.service.ManageRoomService;
 import jakarta.validation.Valid;
@@ -39,10 +40,14 @@ public class ManageRoomController {
     }
     //Cập nhật yêu cầu ManageRoom
     @PutMapping("/{id}")
-    public ResponseEntity<ManageRoomDTO> update(@PathVariable Integer id, @Valid @RequestBody ManageRoomDTO dto) {
-
-        return ResponseEntity.ok(manageRoomService.update(id, dto));
+    public ResponseEntity<ManageRoomDTO> update(@PathVariable("id") Integer manageRoomId, @Valid @RequestBody ManageRoomDTO dto){
+        return ResponseEntity.ok(manageRoomService.update(manageRoomId, dto));
     }
+    @PutMapping("/update/{id}")
+    public ResponseEntity<ManageRoomDTO> updateStatus(@PathVariable("id") Integer manageRoomId, @Valid @RequestBody ManageRoomDTO dto){
+        return ResponseEntity.ok(manageRoomService.updateStatus(manageRoomId, dto.getStatus()));
+    }
+
     //Xóa một yêu cầu ManageRoom
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Integer id) {

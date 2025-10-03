@@ -1,6 +1,7 @@
 package com.example.HotelBookingSystem.service;
 
 import com.example.HotelBookingSystem.dto.ManageRoomDTO;
+import com.example.HotelBookingSystem.model.ManageRoom;
 
 import java.util.List;
 
@@ -10,4 +11,5 @@ public interface ManageRoomServiceImpl {
     ManageRoomDTO create(ManageRoomDTO dto);
     ManageRoomDTO update(Integer id, ManageRoomDTO dto);
     void delete(Integer id);
+    ManageRoomDTO updateStatus(Integer id, ManageRoom.Status status);
 }

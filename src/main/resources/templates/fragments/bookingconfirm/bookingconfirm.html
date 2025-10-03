@@ -34,34 +34,41 @@
             <select th:id="'status-' + ${b.idBooking}"
                     th:onchange="'changeBookingStatus(' + ${b.idBooking} + ', this.value)'"
                     class="border rounded px-2 py-1">
-                <option value="PENDING"    th:selected="${b.status == 'PENDING'}">PENDING</option>
-                <option value="CONFIRMED"  th:selected="${b.status == 'CONFIRMED'}">CONFIRMED</option>
-                <option value="CHECKED_IN" th:selected="${b.status == 'CHECKED_IN'}">CHECKED_IN</option>
-                <option value="CHECKED_OUT" th:selected="${b.status == 'CHECKED_OUT'}">CHECKED_OUT</option>
-                <option value="CANCELED"   th:selected="${b.status == 'CANCELED'}">CANCELED</option>
+                <option value="PENDING"    th:selected="${b.status.name() == 'PENDING'}">PENDING</option>
+                <option value="CONFIRMED"  th:selected="${b.status.name() == 'CONFIRMED'}">CONFIRMED</option>
+                <option value="CHECKED_IN" th:selected="${b.status.name() == 'CHECKED_IN'}">CHECKED_IN</option>
+                <option value="CHECKED_OUT" th:selected="${b.status.name() == 'CHECKED_OUT'}">CHECKED_OUT</option>
+                <option value="CANCELLED"   th:selected="${b.status.name() == 'CANCELLED'}">CANCELLED</option>
             </select>
         </td>
     </tr>
     </tbody>
 </table>
 <script>
-    async function changeBookingStatus(booking_id, status) {
-        const body = { bookingId: booking_id, status: status };
+    async function changeBookingStatus(bookingId, status) {
+        const body = { status: status };
         console.log("Sending body:", body);
 
-        const response = await fetch('/api/booking/booking_status', {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(body)
-        });
+        try {
+            const response = await fetch(`/api/booking/${bookingId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
 
-        if (response.ok) {
-            location.reload();
-        } else {
-            const err = await response.text();
-            alert("Cập nhật thất bại: " + err);
+            if (response.ok) {
+                // Reload trang sau khi update thành công
+                location.reload();
+            } else {
+                const err = await response.text();
+                alert("Cập nhật thất bại: " + err);
+            }
+        } catch (error) {
+            console.error(error);
+            alert("Lỗi khi gửi request");
         }
     }
 </script>
+
 </body>
 </html>

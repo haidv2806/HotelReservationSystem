@@ -48,6 +48,11 @@ public class BookingController {
                 .toList();
     }
 
+    @PostMapping("/apiv1")
+    public Page<BookingResponseDTO> getAll(@RequestBody BookingResponseDTO dto){
+        return bookingService.getAllBookingsPaginated(dto.getCheckinDate(),dto.getCheckoutDate(),dto.getRoomName(), PageRequest.of(0, 10));
+    }
+
     @GetMapping("/booking/{id}")
     public BookingResponseDTO getBookingById(@PathVariable int id) {
         Booking booking = bookingService.getBookingById(id);
