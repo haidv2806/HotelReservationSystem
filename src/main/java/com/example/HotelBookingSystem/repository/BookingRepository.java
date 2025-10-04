@@ -34,11 +34,12 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
     JOIN b.room r
     JOIN b.customer c
     WHERE (
-        :keyword IS NULL OR :keyword = '' 
-        OR LOWER(r.roomName) LIKE LOWER(CONCAT('%', :keyword, '%'))
-        OR LOWER(c.customerName) LIKE LOWER(CONCAT('%', :keyword, '%'))
-        OR c.phone LIKE CONCAT('%', :keyword, '%')
+               :keyword IS NULL OR :keyword = ''\s
+               OR LOWER(REPLACE(r.roomName, ' ', '')) LIKE LOWER(CONCAT('%', REPLACE(:keyword, ' ', ''), '%'))
+               OR LOWER(REPLACE(c.customerName, ' ', '')) LIKE LOWER(CONCAT('%', REPLACE(:keyword, ' ', ''), '%'))
+               OR REPLACE(c.phone, ' ', '') LIKE CONCAT('%', REPLACE(:keyword, ' ', ''), '%')
     )
+            
     AND (:startDate IS NULL OR b.checkinDate >= :startDate)
     AND (:endDate IS NULL OR b.checkoutDate <= :endDate)
 """)

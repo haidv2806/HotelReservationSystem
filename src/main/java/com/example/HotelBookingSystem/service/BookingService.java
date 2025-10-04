@@ -225,8 +225,11 @@ public class BookingService implements BookingServieImpl {
         return BookingConfirmMapper.toDTO(updated);
     }
 
-
-
-
+    public void deleteBooking(Integer id) {
+        if (!bookingRepository.existsById(id)) {
+            throw new RuntimeException("Booking không tồn tại!");
+        }
+        bookingRepository.deleteById(id);
+    }
 
 }

@@ -48,15 +48,15 @@ public class BookingController {
                 .toList();
     }
 
-    @PostMapping("/apiv1")
-    public Page<BookingResponseDTO> getAll(@RequestBody BookingResponseDTO dto){
-        return bookingService.getAllBookingsPaginated(dto.getCheckinDate(),dto.getCheckoutDate(),dto.getRoomName(), PageRequest.of(0, 10));
-    }
-
     @GetMapping("/booking/{id}")
     public BookingResponseDTO getBookingById(@PathVariable int id) {
         Booking booking = bookingService.getBookingById(id);
         return BookingConfirmMapper.toDTO(booking);
+    }
+    //--------------- POST----------------------------
+    @PostMapping("/create")
+    public Page<BookingResponseDTO> getAll(@RequestBody BookingResponseDTO dto){
+        return bookingService.getAllBookingsPaginated(dto.getCheckinDate(),dto.getCheckoutDate(),dto.getRoomName(), PageRequest.of(0, 10));
     }
 
     // ------------------- UPDATE STATUS -------------------
@@ -65,6 +65,13 @@ public class BookingController {
                                                            @RequestBody BookingRequestDTO requestDTO) {
         BookingResponseDTO response = bookingService.updateBookingStatus(bookingId, requestDTO);
         return ResponseEntity.ok(response);
+    }
+
+    //----------------DELETE------------------
+    @DeleteMapping("/booking/{id}")
+    public ResponseEntity<?> deleteBooking(@PathVariable("id") Integer id) {
+        bookingService.deleteBooking(id);
+        return ResponseEntity.ok().build();
     }
 
 }

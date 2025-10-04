@@ -1,49 +1,120 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Booking Confirm</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-
+    <title>Danh sách Bookings</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body th:fragment="bookingconfirm" class="bg-gray-100 p-6">
+<body th:fragment="bookingconfirm" class="bg-gray-100">
 
-<h1 class="text-2xl font-bold mb-6">Booking Confirm</h1>
+<div class="max-w-7xl mx-auto py-6 px-4">
 
-<table class="min-w-full bg-white rounded shadow">
-    <thead class="bg-gray-200">
-    <tr>
-        <th class="border border-gray-300 px-4 py-2">ID Booking</th>
-        <th class="border border-gray-300 px-4 py-2">Create At</th>
-        <th class="border border-gray-300 px-4 py-2">Checkin Date</th>
-        <th class="border border-gray-300 px-4 py-2">Checkout Date</th>
-        <th class="border border-gray-300 px-4 py-2">Note</th>
-        <th class="border border-gray-300 px-4 py-2">Total Price</th>
-        <th class="border border-gray-300 px-4 py-2">Status</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="b : ${bookings}" class="border-b">
-        <td class="px-4 py-2" th:text="${b.idBooking}"></td>
-        <td class="px-4 py-2" th:text="${#temporals.format(b.createAt, 'dd-MM-yyyy HH:mm')}"></td>
-        <td class="px-4 py-2" th:text="${#temporals.format(b.checkinDate, 'dd-MM-yyyy')}"></td>
-        <td class="px-4 py-2" th:text="${#temporals.format(b.checkoutDate, 'dd-MM-yyyy')}"></td>
-        <td class="px-4 py-2" th:text="${b.note != null ? b.note : 'N/A'}"></td>
-        <td class="px-4 py-2" th:text="${b.totalPrice != null ? b.totalPrice : '0'}"></td>
-        <td class="px-4 py-2">
-            <select th:id="'status-' + ${b.idBooking}"
-                    th:onchange="'changeBookingStatus(' + ${b.idBooking} + ', this.value)'"
-                    class="border rounded px-2 py-1">
-                <option value="PENDING"    th:selected="${b.status.name() == 'PENDING'}">PENDING</option>
-                <option value="CONFIRMED"  th:selected="${b.status.name() == 'CONFIRMED'}">CONFIRMED</option>
-                <option value="CHECKED_IN" th:selected="${b.status.name() == 'CHECKED_IN'}">CHECKED_IN</option>
-                <option value="CHECKED_OUT" th:selected="${b.status.name() == 'CHECKED_OUT'}">CHECKED_OUT</option>
-                <option value="CANCELLED"   th:selected="${b.status.name() == 'CANCELLED'}">CANCELLED</option>
-            </select>
-        </td>
-    </tr>
-    </tbody>
-</table>
+    <h1 class="text-2xl font-bold mb-4">Danh sách Bookings</h1>
+
+    <!-- 🔍 Form search -->
+    <form th:action="@{/dashboard/bookingconfirm}" method="get"
+          class="flex flex-wrap gap-4 bg-white p-4 rounded shadow mb-6">
+        <input type="text" name="search" placeholder="Nhập tên, số điện thoại hoặc phòng..."
+               th:value="${param.search}"
+               class="border p-2 rounded w-64"/>
+
+        <label class="flex items-center gap-2">
+            Check-in từ:
+            <input type="date" name="checkinDate" th:value="${param.start}" class="border p-2 rounded"/>
+        </label>
+
+        <label class="flex items-center gap-2">
+            đến:
+            <input type="date" name="checkoutDate" th:value="${param.end}" class="border p-2 rounded"/>
+        </label>
+
+        <button type="submit"
+                class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+            🔍 Tìm kiếm
+        </button>
+        <!-- 🔁 Nút Reset -->
+        <a th:href="@{/dashboard/bookingconfirm}"
+           class="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500">
+            🔄 Reset
+        </a>
+    </form>
+
+    <!-- 📋 Bảng bookings -->
+    <div class="bg-white rounded shadow overflow-hidden">
+        <table class="min-w-full text-sm">
+            <thead class="bg-gray-200 text-left">
+            <tr>
+                <th class="px-4 py-2">ID</th>
+                <th class="px-4 py-2">Room</th>
+                <th class="px-4 py-2">Customer</th>
+                <th class="px-4 py-2">Check-in/Check-out</th>
+                <th class="px-4 py-2">Note</th>
+                <th class="px-4 py-2">Total Price</th>
+                <th class="px-4 py-2">Status</th>
+                <th class="px-4 py-2">Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="b : ${bookings}" class="border-b hover:bg-gray-50">
+                <td class="px-4 py-2" th:text="${b.idBooking}"></td>
+                <td class="px-4 py-2" th:text="${b.roomName}"></td>
+                <td class="px-4 py-2" th:text="${b.customerName}"></td>
+<!--                <td class="px-4 py-2" th:text="${#temporals.format(b.checkinDate, 'dd-MM-yyyy')}"></td>-->
+<!--                <td class="px-4 py-2" th:text="${#temporals.format(b.checkoutDate, 'dd-MM-yyyy')}"></td>-->
+                <td class="px-4 py-2">
+                    <span th:text="${#temporals.format(b.checkinDate, 'dd-MM-yyyy')}"></span>
+                    →
+                    <span th:text="${#temporals.format(b.checkoutDate, 'dd-MM-yyyy')}"></span>
+                </td>
+                <td class="px-4 py-2 italic text-gray-600" th:text="${b.note ?: 'N/A'}"></td>
+                <td class="px-4 py-2 font-semibold text-blue-600"
+                    th:text="${#numbers.formatDecimal(b.totalPrice ?: 0, 0, 'POINT', 2, 'POINT')}"></td>
+                <td class="px-4 py-2">
+                    <select th:id="'status-' + ${b.idBooking}"
+                            th:onchange="'changeBookingStatus(' + ${b.idBooking} + ', this.value)'"
+                            class="border rounded px-2 py-1">
+                        <option value="PENDING"    th:selected="${b.status == 'PENDING'}">PENDING</option>
+                        <option value="CONFIRMED"  th:selected="${b.status == 'CONFIRMED'}">CONFIRMED</option>
+                        <option value="CHECKED_IN" th:selected="${b.status == 'CHECKED_IN'}">CHECKED_IN</option>
+                        <option value="CHECKED_OUT" th:selected="${b.status == 'CHECKED_OUT'}">CHECKED_OUT</option>
+                        <option value="CANCELLED"   th:selected="${b.status == 'CANCELLED'}">CANCELLED</option>
+                    </select>
+                </td>
+                <!-- 🗑️ Nút Xóa -->
+                <td class="px-4 py-2 text-center">
+                    <button type="button"
+                            class="bg-red-600 text-white px-3 py-1 rounded hover:bg-blue-700"
+                            th:onclick="'deleteBooking(' + ${b.idBooking} + ')'">
+                        🗑️
+                    </button>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(bookings)}">
+                <td colspan="8" class="text-center py-4 text-gray-500">Không có booking nào</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 📌 Thông tin phân trang -->
+    <div class="flex justify-between items-center mt-4">
+        <p class="text-gray-600">
+            Trang <span th:text="${currentPage + 1}"></span> / <span th:text="${totalPages}"></span>
+            (Tổng <span th:text="${totalElements}"></span> bookings)
+        </p>
+
+        <!-- 🔀 Nút phân trang -->
+        <div class="flex gap-2">
+            <a th:if="${currentPage > 0}"
+               th:href="@{/dashboard/bookingconfirm(page=${currentPage - 1}, size=${param.size != null ? param.size : 10}, search=${search}, start=${start}, end=${end})}"
+               class="px-3 py-1 border rounded bg-gray-200 hover:bg-gray-300">« Trước</a>
+
+            <a th:if="${currentPage + 1 < totalPages}"
+               th:href="@{/dashboard/bookingconfirm(page=${currentPage + 1}, size=${param.size != null ? param.size : 10}, search=${search}, start=${start}, end=${end})}"
+               class="px-3 py-1 border rounded bg-gray-200 hover:bg-gray-300">Sau »</a>
+        </div>
+    </div>
+</div>
 <script>
     async function changeBookingStatus(bookingId, status) {
         const body = { status: status };
@@ -66,6 +137,25 @@
         } catch (error) {
             console.error(error);
             alert("Lỗi khi gửi request");
+        }
+    }
+
+     async function deleteBooking(bookingId) {
+        if (!confirm("Bạn có chắc muốn xóa booking này không?")) return;
+
+        try {
+            const response = await fetch(`/api/booking/${bookingId}`, { method: 'DELETE' });
+
+            if (response.ok) {
+                alert("Đã xóa booking thành công!");
+                location.reload();
+            } else {
+                const err = await response.text();
+                alert("Xóa thất bại: " + err);
+            }
+        } catch (error) {
+            console.error(error);
+            alert("Lỗi khi gửi yêu cầu xóa!");
         }
     }
 </script>

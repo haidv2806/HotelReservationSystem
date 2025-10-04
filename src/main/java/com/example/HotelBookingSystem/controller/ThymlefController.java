@@ -6,6 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -129,25 +132,43 @@ public class ThymlefController {
         return "manageroom";
     }
 
-//    @GetMapping("/dashboard/bookingconfirm")
-//    public ModelAndView showBookings(
-//            @RequestParam(defaultValue = "0") int page,
-//            @RequestParam(defaultValue = "10") int size,
-//            @RequestParam(defaultValue = "idBooking") String sortField,
-//            @RequestParam(defaultValue = "asc") String sortDir,
-//            @RequestParam(required = false) String roomName,
-//            @RequestParam(required = false) String customerName,
-//            @RequestParam(required = false) String customerPhone
-//    ) {
-//        Page<Booking> bookingPage = bookingService.
-//        // ví dụ filter theo note
-//        // Lấy tất cả record từ DB
-//        List<Booking> bookings = bookingRepository.findAll();
-//        // Truyền xuống view
-//        model.addAttribute("bookings", bookings);
-//        // Trả về index.html (trong đó có include bookingconfirm.html)
-//        return "bookingconfirm";
-//    }
+    @GetMapping("/dashboard/bookingconfirm")
+    public ModelAndView showBookings(
+            @RequestParam(required = false, value = "search") String search,
+            @RequestParam(required = false, name = "checkinDate") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate start,
+            @RequestParam(required = false, name = "checkoutDate") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate end,
+            @PageableDefault(size = 10, sort = "createAt", direction = Sort.Direction.ASC) Pageable pageable,
+            Model model
+    ) {
+        // ✅ Làm sạch chuỗi tìm kiếm (trim + bỏ chuỗi rỗng)
+        if (search != null) {
+            search = search.trim();
+            if (search.isEmpty()) {
+                search = null;
+            }
+        }
+
+        // ✅ Lấy dữ liệu phân trang
+        Page<BookingResponseDTO> pageResult = bookingService.getAllBookingsPaginated(start, end, search, pageable);
+
+        // ✅ Chuẩn bị ModelAndView
+        ModelAndView mav = new ModelAndView("bookingconfirm");
+        mav.addObject("bookings", pageResult.getContent());
+        mav.addObject("currentPage", pageResult.getNumber());
+        mav.addObject("totalPages", pageResult.getTotalPages());
+        mav.addObject("totalElements", pageResult.getTotalElements());
+
+        // ✅ Giữ lại các tham số tìm kiếm để hiển thị lại trên giao diện
+        mav.addObject("search", search);
+        mav.addObject("start", start);
+        mav.addObject("end", end);
+
+        // ✅ Đánh dấu để tự động cuộn xuống bảng (nếu bạn muốn behavior như "scrollToCards")
+        mav.addObject("scrollToTable", true);
+
+        return mav;
+    }
+
 
 
 

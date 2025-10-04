@@ -32,4 +32,5 @@ public interface BookingServieImpl {
                                                     Pageable pageable);
     Booking getBookingById(int id);
     BookingResponseDTO updateBookingStatus(int bookingId, BookingRequestDTO requestDTO);
+
 }
