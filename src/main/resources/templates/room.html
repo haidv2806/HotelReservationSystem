@@ -1,21 +1,83 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org">
 
 <head>
-  <meta charset="UTF-8">
-  <title>Dashboard</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+    <meta charset="UTF-8">
+    <title>Room Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script>
+        async function deleteRoom(room_id) {
+            if (!confirm("Bạn có chắc muốn xóa phòng này?")) return;
+            const response = await fetch('/api/rooms/' + room_id, { method: 'DELETE' });
+            if (response.ok) {
+                location.reload();
+            } else {
+                alert("Xóa phòng thất bại");
+            }
+        }
+    </script>
 </head>
 
-<body class="flex">
-  <!-- Gọi sidebar -->
-  <div th:insert="~{fragments/sidebar :: sidebar}"></div>
+<body class="bg-gray-100 flex">
+
+    <!-- Gọi sidebar -->
+    <div th:insert="~{fragments/sidebar :: sidebar}"></div>
 
 
-  <!-- Nội dung trang -->
-  <main class="flex-1 p-6 bg-gray-100">
-    <div th:insert="~{fragments/room/room :: room}"></div>
-  </main>
+    <!-- Nội dung trang -->
+    <main class="flex-1 p-6 bg-gray-100">
+
+
+        <h1 class="text-2xl font-bold mb-6">Room Dashboard</h1>
+
+        <!-- Nút thêm phòng -->
+        <div class="mb-4">
+            <a href="/dashboard/room/addroom" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">+ Thêm
+                phòng</a>
+        </div>
+
+        <!-- Header Grid -->
+        <div class="grid grid-cols-8 bg-gray-200 font-semibold text-left rounded-t-lg">
+            <div class="py-2 px-4">ID</div>
+            <div class="py-2 px-4">Tên phòng</div>
+            <div class="py-2 px-4">Loại</div>
+            <div class="py-2 px-4">Giá</div>
+            <div class="py-2 px-4">Mô tả</div>
+            <div class="py-2 px-4">Ảnh</div>
+            <div class="py-2 px-4">Trạng thái</div>
+            <div class="py-2 px-4">Hành động</div>
+        </div>
+
+        <!-- Data Grid -->
+        <div th:each="r : ${rooms}" class="grid grid-cols-8 bg-white border-b items-center">
+            <div class="py-2 px-4" th:text="${r.roomId}"></div>
+            <div class="py-2 px-4" th:text="${r.roomName}"></div>
+            <div class="py-2 px-4" th:text="${r.type}"></div>
+            <div class="py-2 px-4" th:text="${#numbers.formatDecimal(r.price, 1, 'COMMA', 2, 'POINT')}"></div>
+            <div class="py-2 px-4 truncate max-w-[120px]">is simply dummy text of the printing and typesetting industry.
+                Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer
+                took a galley of type and scrambled it to make a type specimen book. It has survived not only five
+                centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was
+                popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more
+                recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</div>
+            <div class="py-2 px-4">
+                <img th:src="${r.img}" alt="Room Image" class="w-20 h-16 object-cover rounded">
+            </div>
+            <span th:if="${r.status.name() == 'available'}" class="text-green-600 font-semibold">Available</span>
+            <span th:if="${r.status.name() == 'deleted'}" class="text-red-600 font-semibold">Deleted</span>
+
+            <div class="py-2 px-4 space-x-2">
+                <a th:href="@{/dashboard/room/editroom/{id}(id=${r.roomId})}"
+                    class="bg-yellow-500 hover:bg-yellow-600 text-white px-2 py-1 rounded">Sửa</a>
+                <button th:onclick="'deleteRoom(' + ${r.roomId} + ')'"
+                    class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded">
+                    Xóa
+                </button>
+
+            </div>
+        </div>
+
+    </main>
 </body>
 
 </html>

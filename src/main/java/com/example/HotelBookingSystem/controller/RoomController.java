@@ -33,7 +33,7 @@ public class RoomController {
                 .getContent();
     }
 
-    @GetMapping("/room/{id}")
+    @GetMapping("/rooms/{id}")
     public RoomDetailResponse roomDetail(@PathVariable("id") Integer roomId) {
         return roomService.getRoomDetail(roomId);
     }
@@ -72,8 +72,10 @@ public class RoomController {
 
     // Xóa phòng
     @DeleteMapping("/{id}")
-    public String deleteRoom(@PathVariable Integer id) {
+    public String deleteRoom(@PathVariable int id) {
         return roomService.deleteHandle(id);
     }
-
+//
+//    // Xóa vĩnh viễn
+//    public String absoluteDeleteRoom(@PathVariable int id){ return roomService.deleteHandle(id);}
 }
