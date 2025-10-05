@@ -1,7 +1,9 @@
 package com.example.HotelBookingSystem.controller;
 
+import com.example.HotelBookingSystem.dto.BookingResponseDTO;
 import com.example.HotelBookingSystem.dto.ManageRoomDTO;
 import com.example.HotelBookingSystem.dto.ManageRoomRequest;
+import com.example.HotelBookingSystem.service.BookingService;
 import com.example.HotelBookingSystem.service.ManageRoomService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -49,6 +51,8 @@ public class ThymlefController {
 
     @Autowired
     private RoomRepository roomRepository;
+    @Autowired
+    private BookingService bookingService;
 
     @Autowired
     private ManageRoomService manageRoomService;
@@ -227,16 +231,44 @@ public class ThymlefController {
 
 
     @GetMapping("/dashboard/bookingconfirm")
-    public String showBookings(Model model) {
-        // Lấy tất cả record từ DB
-        List<Booking> bookings = bookingRepository.findAll();
+    public ModelAndView showBookings(
+            @RequestParam(required = false, value = "search") String search,
+            @RequestParam(required = false, name = "checkinDate") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate start,
+            @RequestParam(required = false, name = "checkoutDate") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate end,
+            @PageableDefault(size = 10, sort = "createAt", direction = Sort.Direction.ASC) Pageable pageable,
+            Model model
+    ) {
+        // ✅ Làm sạch chuỗi tìm kiếm (trim + bỏ chuỗi rỗng)
+        if (search != null) {
+            search = search.trim();
+            if (search.isEmpty()) {
+                search = null;
+            }
+        }
 
-        // Truyền xuống view
-        model.addAttribute("bookings", bookings);
+        // ✅ Lấy dữ liệu phân trang
+        Page<BookingResponseDTO> pageResult = bookingService.getAllBookingsPaginated(start, end, search, pageable);
 
-        // Trả về index.html (trong đó có include bookingconfirm.html)
-        return "bookingconfirm";
+        // ✅ Chuẩn bị ModelAndView
+        ModelAndView mav = new ModelAndView("bookingconfirm");
+        mav.addObject("bookings", pageResult.getContent());
+        mav.addObject("currentPage", pageResult.getNumber());
+        mav.addObject("totalPages", pageResult.getTotalPages());
+        mav.addObject("totalElements", pageResult.getTotalElements());
+
+        // ✅ Giữ lại các tham số tìm kiếm để hiển thị lại trên giao diện
+        mav.addObject("search", search);
+        mav.addObject("start", start);
+        mav.addObject("end", end);
+
+        // ✅ Đánh dấu để tự động cuộn xuống bảng (nếu bạn muốn behavior như "scrollToCards")
+        mav.addObject("scrollToTable", true);
+
+        return mav;
     }
+
+
+
 
     @GetMapping("/dashboard/room")
     public String showRooms(Model model) {

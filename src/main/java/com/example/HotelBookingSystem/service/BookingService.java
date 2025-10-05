@@ -9,7 +9,10 @@ import com.example.HotelBookingSystem.repository.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -45,9 +48,9 @@ public class BookingService implements BookingServieImpl {
 
     @Autowired
     private ManageRoomRepository manageRoomRepository;
-    //add them
+    // add them
     @Autowired
-    private  AdminRepository adminRepository;
+    private AdminRepository adminRepository;
 
     @Override
     public Optional<Booking> findBooking(Long id) {
@@ -169,11 +172,35 @@ public class BookingService implements BookingServieImpl {
             throw new RuntimeException("Không thể tạo mới booking", e);
         }
     }
-    //phan confirmbooking cua Hieu
+
+    // phan confirmbooking cua Hieu
     @Override
-    public List<Booking>getAllBookings(){
+    public List<Booking> getAllBookings() {
         return bookingRepository.findAll();
     }
+
+    @Override
+    public Page<BookingResponseDTO> getAllBookingsPaginated(LocalDate start, LocalDate end,
+            String search,
+            Pageable pageable) {
+        Page<Booking> pageResult = bookingRepository.searchBookings(search, start, end, pageable);
+
+        return pageResult.map(booking -> {
+            BookingResponseDTO dto = new BookingResponseDTO();
+
+            dto.setIdBooking(booking.getIdBooking());
+            dto.setRoomName(booking.getRoom() != null ? booking.getRoom().getRoomName() : null);
+            dto.setCustomerName(booking.getCustomer() != null ? booking.getCustomer().getCustomerName() : null);
+            dto.setCheckinDate(booking.getCheckinDate());
+            dto.setCheckoutDate(booking.getCheckoutDate());
+            dto.setStatus(booking.getStatus().name());
+            dto.setNote(booking.getNote());
+            dto.setTotalPrice(booking.getTotalPrice());
+            dto.setCreateAt(booking.getCreateAt());
+            return dto;
+        });
+    }
+
     @Override
     public Booking getBookingById(int id) {
         return bookingRepository.findById(id)
@@ -201,8 +228,11 @@ public class BookingService implements BookingServieImpl {
         return BookingConfirmMapper.toDTO(updated);
     }
 
-
-
-
+    public void deleteBooking(Integer id) {
+        if (!bookingRepository.existsById(id)) {
+            throw new RuntimeException("Booking không tồn tại!");
+        }
+        bookingRepository.deleteById(id);
+    }
 
 }

@@ -1,6 +1,8 @@
 package com.example.HotelBookingSystem.controller;
 
 import com.example.HotelBookingSystem.dto.*;
+import com.example.HotelBookingSystem.dto.BookingResponseDTO;
+import com.example.HotelBookingSystem.dto.ManageRoomDTO;
 import com.example.HotelBookingSystem.service.ManageRoomService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
