@@ -1,13 +1,13 @@
 package com.example.HotelBookingSystem.controller;
 
+import com.example.HotelBookingSystem.model.Admin;
+import com.example.HotelBookingSystem.service.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -28,6 +28,9 @@ import com.example.HotelBookingSystem.service.RoomService;
 public class ThymlefController {
     @Autowired
     private CustomerRepository customerRepository;
+
+    @Autowired
+    private AdminService adminService;
 
     @Autowired
     private RoomService roomService;
@@ -139,19 +142,30 @@ public class ThymlefController {
 
     @GetMapping("/dashboard/room")
     public String showRooms(Model model) {
-        // Lấy tất cả record từ DB
-        List<Room> rooms = roomRepository.findAll();
-
-        // Truyền xuống view
+        List<Room> rooms = roomService.findAll(PageRequest.of(0, 100)).getContent();
         model.addAttribute("rooms", rooms);
-
-        // Trả về index.html (trong đó có include bookingconfirm.html)
-        return "room";
+        return "room"; // tìm file room.html
     }
 
+    // Hiển thị form login
     @GetMapping("/login")
-    public String login(Model model) {
+    public String loginForm() {
         return "login";
+    }
+
+    @GetMapping("/dashboard/room/addroom")
+    public String addRoomPage() {
+        return "addroom";
+    }
+
+    @GetMapping("/dashboard/room/editroom/{id}")
+    public String editRoom(@PathVariable("id") Integer id, Model model) {
+        Room room = roomService.findRoom(id).orElse(null);
+        if (room == null) {
+            return "redirect:/dashboard/room";
+        }
+        model.addAttribute("room", room);
+        return "editroom"; // templates/room/editroom.html
     }
 
 }
