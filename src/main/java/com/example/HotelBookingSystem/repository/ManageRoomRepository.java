@@ -5,6 +5,8 @@ import com.example.HotelBookingSystem.model.ManageRoom;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -12,7 +14,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ManageRoomRepository extends JpaRepository<ManageRoom, Integer> {
-    
+
     // Lấy các record manage room theo roomId
     List<ManageRoom> findByRoom_RoomId(Integer roomId);
 
@@ -43,4 +45,16 @@ public interface ManageRoomRepository extends JpaRepository<ManageRoom, Integer>
     boolean existsBookingOverlap(@Param("roomId") Integer roomId,
                                  @Param("startDate") LocalDate startDate,
                                  @Param("endDate") LocalDate endDate);
+
+    // 🔍 Tìm kiếm ManageRoom theo khoảng ngày (startDate / endDate)
+    @Query("""
+    SELECT m FROM ManageRoom m
+    WHERE (:startDate IS NULL OR m.startDate >= :startDate)
+      AND (:endDate IS NULL OR m.endDate <= :endDate)
+""")
+
+    Page<ManageRoom> searchManages(
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate,
+            Pageable pageable);
 }

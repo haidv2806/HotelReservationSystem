@@ -8,9 +8,12 @@ import com.example.HotelBookingSystem.repository.AdminRepository;
 import com.example.HotelBookingSystem.repository.ManageRoomRepository;
 import com.example.HotelBookingSystem.repository.RoomRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,7 +34,10 @@ public class ManageRoomService implements ManageRoomServiceImpl {
         dto.setStartDate(m.getStartDate());
         dto.setEndDate(m.getEndDate());
         dto.setNote(m.getNote());
-        dto.setRoomId(m.getRoom().getRoomId());
+        if (m.getRoom() != null) {
+            dto.setRoomId(m.getRoom().getRoomId());
+            dto.setRoomName(m.getRoom().getRoomName());
+        }
         dto.setStatus(m.getStatus());
         return dto;
     }
@@ -40,6 +46,22 @@ public class ManageRoomService implements ManageRoomServiceImpl {
         return manageRoomRepo.findAll().stream().map(this::toDTO).collect(Collectors.toList());
     }
 
+    public Page<ManageRoomDTO>getAllManageRooms(LocalDate start, LocalDate end, Pageable pageable){
+        Page<ManageRoom> pageResult = manageRoomRepo.searchManages(start, end, pageable);
+
+        return pageResult.map(manageRoom ->  {
+            ManageRoomDTO dto = new ManageRoomDTO();
+
+            dto.setManageRoomId(manageRoom.getManageRoomId());
+            dto.setRoomName(manageRoom.getRoom() != null ? manageRoom.getRoom().getRoomName() : null);
+            dto.setStartDate(manageRoom.getStartDate());
+            dto.setEndDate(manageRoom.getEndDate());
+            dto.setNote(manageRoom.getNote());
+            dto.setStatus(manageRoom.getStatus());
+
+            return dto;
+        });
+    }
 
     @Override
     public ManageRoomDTO getById(Integer id) {
@@ -47,31 +69,37 @@ public class ManageRoomService implements ManageRoomServiceImpl {
         return toDTO(m);
     }
     @Override
-    public ManageRoomDTO create(ManageRoomDTO dto) {
-        if (dto.getStartDate().isAfter(dto.getEndDate())) {
-            throw new RuntimeException("Start date must be before or equal to end date");
+    public ManageRoomDTO create(
+            LocalDate startDate, LocalDate endDate, Integer roomId, String note, String status
+    ) {
+        // 1️⃣ Kiểm tra ngày bắt đầu & kết thúc
+        if (startDate.isAfter(endDate)) {
+            throw new RuntimeException("❌ Start date must be before or equal to end date");
+        }
+
+        // 2️⃣ Kiểm tra trùng lịch ManageRoom hoặc Booking
+        boolean hasOverlap = manageRoomRepo.existsManageRoomOverlap(roomId, startDate, endDate)
+                || manageRoomRepo.existsBookingOverlap(roomId, startDate, endDate);
+
+        if (hasOverlap) {
+            throw new RuntimeException("❌ Room already has schedule or booking in this date range");
         }
 
 
-        if (manageRoomRepo.existsManageRoomOverlap(dto.getRoomId(), dto.getStartDate(), dto.getEndDate())
-                || manageRoomRepo.existsBookingOverlap(dto.getRoomId(), dto.getStartDate(), dto.getEndDate())) {
-            throw new RuntimeException("Room already has schedule or booking in this date range");
-        }
+        Room room = roomRepo.findById(roomId).orElseThrow(() -> new RuntimeException("Room not found"));
 
 
+        ManageRoom entity = new ManageRoom();
+        entity.setStartDate(startDate);
+        entity.setEndDate(endDate);
+        entity.setNote(note);
+        entity.setRoom(room);
+        entity.setStatus(ManageRoom.Status.valueOf(status.toUpperCase()));
 
-        Room room = roomRepo.findById(dto.getRoomId()).orElseThrow(() -> new RuntimeException("Room not found"));
-
-
-        ManageRoom m = new ManageRoom();
-        m.setStartDate(dto.getStartDate());
-        m.setEndDate(dto.getEndDate());
-        m.setNote(dto.getNote());
-        m.setStatus(dto.getStatus());
-        m.setRoom(room);
+        ManageRoom saved = manageRoomRepo.save(entity);
 
 
-        return toDTO(manageRoomRepo.save(m));
+        return toDTO(saved);
     }
 
     @Override
@@ -89,18 +117,20 @@ public class ManageRoomService implements ManageRoomServiceImpl {
             throw new RuntimeException("Room already has schedule or booking in this date range");
         }
 
-        Room room = roomRepo.findById(dto.getRoomId()).orElseThrow(() -> new RuntimeException("Room not found"));
-
         m.setStartDate(dto.getStartDate());
         m.setEndDate(dto.getEndDate());
         m.setNote(dto.getNote());
-        m.setStatus(dto.getStatus());
-        m.setRoom(room);
-
 
         return toDTO(manageRoomRepo.save(m));
     }
 
+    @Override
+    public ManageRoomDTO updateStatus (Integer id, ManageRoom.Status status ){
+        ManageRoom manageRoom = manageRoomRepo.findById(id).orElseThrow(()-> new RuntimeException("Not found"));
+        manageRoom.setStatus(status);
+
+        return  toDTO(manageRoomRepo.save(manageRoom));
+    }
 
     @Override
     public void delete(Integer id) {
@@ -108,4 +138,3 @@ public class ManageRoomService implements ManageRoomServiceImpl {
         manageRoomRepo.delete(m);
     }
 }
-

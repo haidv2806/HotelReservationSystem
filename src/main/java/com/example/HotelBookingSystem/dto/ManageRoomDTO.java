@@ -8,6 +8,7 @@ import java.time.LocalDate;
 public class ManageRoomDTO {
     private Integer manageRoomId;
     private String createAt;
+    private String roomName;
     private LocalDate startDate;
     private LocalDate endDate;
     private String note;
@@ -29,4 +30,12 @@ public class ManageRoomDTO {
     public void setRoomId(Integer roomId) { this.roomId = roomId; }
     public ManageRoom.Status getStatus() { return status; }
     public void setStatus(ManageRoom.Status status) { this.status = status; }
+
+    public String getRoomName() {
+        return roomName;
+    }
+
+    public void setRoomName(String roomName) {
+        this.roomName = roomName;
+    }
 }

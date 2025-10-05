@@ -1,9 +1,11 @@
 package com.example.HotelBookingSystem.controller;
 
-import com.example.HotelBookingSystem.dto.ManageRoomDTO;
+import com.example.HotelBookingSystem.dto.*;
 import com.example.HotelBookingSystem.service.ManageRoomService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 
 
@@ -31,18 +33,35 @@ public class ManageRoomController {
     public ResponseEntity<ManageRoomDTO> getById(@PathVariable Integer id) {
         return ResponseEntity.ok(manageRoomService.getById(id));
     }
-    //Tạo mới yêu cầu ManageRoom
-    @PostMapping("")
-    public ResponseEntity<ManageRoomDTO> create(@Valid @RequestBody ManageRoomDTO dto) {
 
-        return ResponseEntity.ok(manageRoomService.create(dto));
+    @PostMapping("/apiv1")
+    public ResponseEntity<ManageRoomDTO> create(@Valid @RequestBody ManageRoomRequest req) {
+
+        ManageRoomDTO res = manageRoomService.create(
+                req.getStartDate(),
+                req.getEndDate(),
+                req.getRoomId(),
+                req.getNote(),
+                req.getStatus()
+        );
+
+        return ResponseEntity.ok(res);
+    }
+    //
+    @PostMapping("/create")
+    public Page<ManageRoomDTO> getAllManage(@RequestBody ManageRoomDTO dto){
+        return manageRoomService.getAllManageRooms(dto.getStartDate(),dto.getEndDate(), PageRequest.of(0, 10));
     }
     //Cập nhật yêu cầu ManageRoom
     @PutMapping("/{id}")
-    public ResponseEntity<ManageRoomDTO> update(@PathVariable Integer id, @Valid @RequestBody ManageRoomDTO dto) {
-
-        return ResponseEntity.ok(manageRoomService.update(id, dto));
+    public ResponseEntity<ManageRoomDTO> update(@PathVariable("id") Integer manageRoomId, @Valid @RequestBody ManageRoomDTO dto){
+        return ResponseEntity.ok(manageRoomService.update(manageRoomId, dto));
     }
+    @PutMapping("/update/{id}")
+    public ResponseEntity<ManageRoomDTO> updateStatus(@PathVariable("id") Integer manageRoomId, @Valid @RequestBody ManageRoomDTO dto){
+        return ResponseEntity.ok(manageRoomService.updateStatus(manageRoomId, dto.getStatus()));
+    }
+
     //Xóa một yêu cầu ManageRoom
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Integer id) {
@@ -50,4 +69,3 @@ public class ManageRoomController {
         return ResponseEntity.noContent().build();
     }
 }
-
