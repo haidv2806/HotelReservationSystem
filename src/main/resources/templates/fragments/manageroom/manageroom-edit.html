@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Chỉnh sửa Quản lý phòng</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-gray-100 p-8">
+<div class="max-w-2xl mx-auto bg-white p-8 rounded-xl shadow-lg">
+    <h1 class="text-2xl font-bold mb-6 text-gray-700 text-center">✏️ Cập nhật Quản lý phòng</h1>
+
+    <form th:action="@{/dashboard/manageroom/update/{id}(id=${manageRoom.manageRoomId})}"
+          th:object="${manageRoom}" method="post" class="space-y-6">
+
+        <div>
+            <label class="block text-gray-700 font-medium">Mã quản lý phòng (ID)</label>
+            <input type="text" th:field="*{manageRoomId}"
+                   class="border w-full p-2 rounded bg-gray-100 text-gray-500" readonly/>
+        </div>
+
+        <div>
+            <label class="block text-gray-700 font-medium">Ngày bắt đầu</label>
+            <input type="date" th:field="*{startDate}" class="border w-full p-2 rounded" required/>
+        </div>
+
+        <div>
+            <label class="block text-gray-700 font-medium">Ngày kết thúc</label>
+            <input type="date" th:field="*{endDate}" class="border w-full p-2 rounded" required/>
+        </div>
+
+        <div>
+            <label class="block text-gray-700 font-medium">Ghi chú</label>
+            <textarea th:field="*{note}" rows="3"
+                      class="border w-full p-2 rounded" placeholder="Nhập ghi chú..."></textarea>
+        </div>
+
+        <div class="flex justify-between items-center mt-6">
+            <a th:href="@{/dashboard/manageroom}"
+               class="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500 transition">
+                ← Quay lại
+            </a>
+
+            <button type="submit"
+                    class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
+                💾 Lưu thay đổi
+            </button>
+        </div>
+    </form>
+
+    <!-- Thông báo lỗi hoặc thành công -->
+    <div th:if="${errorMessage}"
+         class="mt-4 text-red-600 font-medium text-center"
+         th:text="${errorMessage}"></div>
+
+    <div th:if="${successMessage}"
+         class="mt-4 text-green-600 font-medium text-center"
+         th:text="${successMessage}"></div>
+</div>
+</body>
+</html>

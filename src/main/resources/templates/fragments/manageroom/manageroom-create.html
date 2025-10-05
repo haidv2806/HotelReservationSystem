@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Thêm mới Quản Lý Phòng</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+
+</head>
+<body th:fragment="manageroom" class="bg-gray-100 p-6">
+<div class="max-w-lg mx-auto mt-10 bg-white p-6 rounded shadow">
+    <h1 class="text-xl font-bold mb-4 text-gray-700">➕ Thêm mới quản lý phòng</h1>
+
+    <form th:action="@{/dashboard/manageroom/create}" method="post" th:object="${manageRoom}" class="space-y-4">
+
+    <div>
+            <label class="block font-medium">Room ID</label>
+            <input type="number" th:field="*{roomId}" class="border w-full p-2 rounded" required>
+        </div>
+
+        <div>
+            <label class="block font-medium">Ngày bắt đầu</label>
+            <input type="date" th:field="*{startDate}" class="border w-full p-2 rounded" required>
+        </div>
+
+        <div>
+            <label class="block font-medium">Ngày kết thúc</label>
+            <input type="date" th:field="*{endDate}" class="border w-full p-2 rounded" required>
+        </div>
+
+        <div>
+            <label class="block font-medium">Ghi chú</label>
+            <textarea th:field="*{note}" class="border w-full p-2 rounded"></textarea>
+        </div>
+        <div>
+            <label class="block font-medium">Trạng thái</label>
+            <select th:field="*{status}" class="border w-full p-2 rounded">
+                <option value="MAINTAINCE">MAINTAINCE</option>
+                <option value="CLEANING">CLEANING</option>
+            </select>
+        </div>
+
+
+        <div class="flex justify-between">
+            <a th:href="@{/dashboard/manageroom}" class="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500">
+                ← Quay lại
+            </a>
+            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                💾 Lưu
+            </button>
+        </div>
+    </form>
+</div>
+</body>
+</html>

@@ -10,43 +10,106 @@
 
 <body th:fragment="manageroom" class="bg-gray-100 p-6">
 
-    <h1 class="text-2xl font-bold mb-6">Manage Room</h1>
+<h1 class="text-2xl font-bold mb-6">Manage Room</h1>
 
-    <table class="min-w-full bg-white rounded shadow">
-        <thead class="bg-gray-200">
-            <tr>
-                <th class="border border-gray-300 px-4 py-2">Manage ID</th>
-                <th class="border border-gray-300 px-4 py-2">Create At</th>
-                <th class="border border-gray-300 px-4 py-2">Start Date</th>
-                <th class="border border-gray-300 px-4 py-2">End Date</th>
-                <th class="border border-gray-300 px-4 py-2">Note</th>
-                <th class="border border-gray-300 px-4 py-2">Status</th>
-            </tr>
+<form th:action="@{/dashboard/manageroom}" method="get"
+      class="flex flex-wrap gap-4 bg-white p-4 rounded shadow mb-6">
+    <label class="flex items-center gap-2">
+        StartDate
+        <input type="date" name="startDate" th:value="${param.start}" class="border p-2 rounded"/>
+    </label>
+
+    <label class="flex items-center gap-2">
+        EndDate
+        <input type="date" name="endDate" th:value="${param.end}" class="border p-2 rounded"/>
+    </label>
+    <button type="submit"
+            class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+        🔍 Tìm kiếm
+    </button>
+    <!-- 🔁 Nút Reset -->
+    <a th:href="@{/dashboard/manageroom}"
+       class="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500">
+        🔄 Reset
+    </a>
+    <a th:href="@{/dashboard/manageroom/create}"
+       class="bg-blue-600 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-700 ml-auto">
+        ➕ Thêm mới
+    </a>
+</form>
+
+<!-- 📋 Bảng ManageRoom -->
+<div class="bg-white rounded shadow overflow-hidden">
+    <table class="min-w-full text-sm">
+        <thead class="bg-gray-200 text-left">
+        <tr>
+            <th class="px-4 py-2">ID</th>
+            <th class="px-4 py-2">Room Name</th>
+            <th class="px-4 py-2">Start - End Date</th>
+            <th class="px-4 py-2">Note</th>
+            <th class="px-4 py-2">Status</th>
+            <th class="px-4 py-2 text-center">Action</th>
+        </tr>
         </thead>
         <tbody>
-            <tr th:each="m : ${managerooms}" class="border-b">
-                <td class="px-4 py-2" th:text="${m.manageRoomId}"></td>
-                <td class="px-4 py-2" th:text="${#temporals.format(m.createAt, 'dd-MM-yyyy HH:mm')}"></td>
-                <td class="px-4 py-2" th:text="${#temporals.format(m.startDate, 'dd-MM-yyyy')}"></td>
-                <td class="px-4 py-2" th:text="${#temporals.format(m.endDate, 'dd-MM-yyyy')}"></td>
-                <td class="px-4 py-2" th:text="${m.note != null ? m.note : 'N/A'}"></td>
-                <td class="px-4 py-2">
-                    <select th:id="'status-' + ${m.manageRoomId}"
+        <tr th:each="m : ${manageRooms}" class="border-b hover:bg-gray-50">
+            <td class="px-4 py-2" th:text="${m.manageRoomId}"></td>
+            <td class="px-4 py-2" th:text="${m.roomName}"></td>
+            <td class="px-4 py-2">
+                <span th:text="${#temporals.format(m.startDate, 'dd-MM-yyyy')}"></span>
+                →
+                <span th:text="${#temporals.format(m.endDate, 'dd-MM-yyyy')}"></span>
+            </td>
+            <td class="px-4 py-2" th:text="${m.note ?: 'N/A'}"></td>
+            <td class="px-4 py-2">
+                <select th:id="'status-' + ${m.manageRoomId}"
                         th:onchange="'changeManageRoomStatus(' + ${m.manageRoomId} + ', this.value)'"
                         class="border rounded px-2 py-1">
-                        <option value="CLEANING" th:selected="${m.status == 'CLEANING'}">CLEANING</option>
-                        <option value="MAINTAINCE" th:selected="${m.status == 'MAINTAINCE'}">MAINTAINCE</option>
-                    </select>
-                </td>
-            </tr>
+                    <option value="MAINTAINCE"    th:selected="${m.status.name() == 'MAINTAINCE'}">MAINTAINCE</option>
+                    <option value="CLEANING"  th:selected="${m.status.name() == 'CLEANING'}">CLEANING</option>
+                </select>
+            </td>
+            <td class="px-4 py-2 flex gap-2 justify-center">
+                <a th:href="@{/dashboard/manageroom/edit/{id}(id=${m.manageRoomId})}"
+                   class="bg-yellow-400 text-white px-3 py-1 rounded hover:bg-yellow-500">
+                    ✏️ Sửa
+                </a>
+                <button class="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
+                        th:onclick="'deleteManage(' + ${m.manageRoomId} + ')'">
+                    🗑️ Xóa
+                </button>
+            </td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(manageRooms)}">
+            <td colspan="6" class="text-center py-4 text-gray-500">Không có dữ liệu</td>
+        </tr>
         </tbody>
     </table>
-    <script>
-        async function changeManageRoomStatus(manageRoomId, status) {
-            const body = { manageRoomId: manageRoomId, status: status };
-            console.log("Sending body:", body);
+</div>
+<!-- 📌 Phân trang -->
+<div class="flex justify-between items-center mt-4">
+    <p class="text-gray-600">
+        Trang <span th:text="${currentPage + 1}"></span> / <span th:text="${totalPages}"></span>
+    </p>
 
-            const response = await fetch('/api/manageroom/status', {
+    <div class="flex gap-2">
+        <a th:if="${currentPage > 0}"
+           th:href="@{/dashboard/manageroom(page=${currentPage - 1}, startDate=${startDate}, endDate=${endDate})}"
+           class="px-3 py-1 border rounded bg-gray-200 hover:bg-gray-300">« Trước</a>
+
+        <a th:if="${currentPage + 1 < totalPages}"
+           th:href="@{/dashboard/manageroom(page=${currentPage + 1}, startDate=${startDate}, endDate=${endDate})}"
+           class="px-3 py-1 border rounded bg-gray-200 hover:bg-gray-300">Sau »</a>
+    </div>
+</div>
+
+<script>
+    async function changeManageRoomStatus(manageRoomId, status) {
+        const body = { status: status };
+        console.log("Sending body:", body);
+
+        try {
+             const response = await fetch(`/api/manage-rooms/update/${manageRoomId}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(body)
@@ -58,8 +121,100 @@
                 const err = await response.text();
                 alert("Cập nhật thất bại: " + err);
             }
+        } catch (error) {
+            console.error(error);
+            alert("Lỗi khi gửi request");
         }
-    </script>
+    }
+
+     async function deleteManage(manageRoomId) {
+        if (!confirm("Bạn có chắc muốn xóa id này không?")) return;
+
+        try {
+            const response = await fetch(`/api/manage-rooms/${manageRoomId}`, { method: 'DELETE' });
+
+            if (response.ok) {
+                alert("Đã xóa id thành công!");
+                location.reload();
+            } else {
+                const err = await response.text();
+                alert("Xóa thất bại: " + err);
+            }
+        } catch (error) {
+            console.error(error);
+            alert("Lỗi khi gửi yêu cầu xóa!");
+        }
+    }
+</script>
+
+
+
+<script>
+    let currentEditId = null;
+
+    function openEditModal(btn) {
+      // Lấy dữ liệu từ button
+      currentEditId = btn.dataset.id;
+      document.getElementById("editNote").value = btn.dataset.note || "";
+      document.getElementById("editStartDate").value = btn.dataset.start;
+      document.getElementById("editEndDate").value = btn.dataset.end;
+
+      // Hiển thị modal
+      const modal = document.getElementById("editModal");
+      modal.classList.remove("hidden");
+      modal.classList.add("flex");
+    }
+
+    function closeEditModal() {
+      document.getElementById("editModal").classList.add("hidden");
+      document.getElementById("editModal").classList.remove("flex");
+      currentEditId = null;
+    }
+
+    async function submitEdit(event) {
+      event.preventDefault();
+      if (!currentEditId) return alert("Không tìm thấy ID!");
+
+      const note = document.getElementById("editNote").value;
+      const startDate = document.getElementById("editStartDate").value;
+      const endDate = document.getElementById("editEndDate").value;
+
+      const body = { note, startDate, endDate };
+
+      try {
+        const res = await fetch(`/api/manage-rooms/${currentEditId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        });
+
+        if (!res.ok) {
+          const err = await res.text();
+          return alert("❌ Lỗi: " + err);
+        }
+
+        // ✅ Cập nhật ngay DOM
+        const updatedRow = document.querySelector(`tr[data-id='${currentEditId}']`);
+        if (updatedRow) {
+          updatedRow.querySelector(".note-cell").innerText = note || "N/A";
+          updatedRow.querySelector(".date-cell").innerHTML =
+            `${new Date(startDate).toLocaleDateString("vi-VN")} → ${new Date(endDate).toLocaleDateString("vi-VN")}`;
+        }
+
+        closeEditModal();
+        alert("✅ Cập nhật thành công!");
+      } catch (e) {
+        console.error(e);
+        alert("⚠️ Lỗi khi gửi request!");
+      }
+    }
+</script>
+
+
+
+</body>
+</html>
+
 
 </body>
 
