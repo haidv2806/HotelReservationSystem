@@ -7,8 +7,14 @@
     <script>
         async function deleteRoom(room_id) {
             if (!confirm("Bạn có chắc muốn xóa phòng này?")) return;
-            const response = await fetch('/api/room/' + room_id, { method: 'DELETE' });
+
+            const response = await fetch('/api/rooms/' + room_id, {
+                method: 'DELETE'
+            });
+
             if (response.ok) {
+                const message = await response.text();
+                alert(message);
                 location.reload();
             } else {
                 alert("Xóa phòng thất bại");
@@ -46,20 +52,47 @@
     <div class="py-2 px-4" th:text="${r.type}"></div>
     <div class="py-2 px-4"
          th:text="${#numbers.formatDecimal(r.price, 1, 'COMMA', 2, 'POINT')}"></div>
-    <div class="py-2 px-4 truncate max-w-[120px]">is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</div>
+    <div class="py-2 px-4 truncate max-w-[120px]" th:utext="${r.description}"></div>
     <div class="py-2 px-4">
         <img th:src="${r.img}" alt="Room Image" class="w-20 h-16 object-cover rounded">
     </div>
-    <span th:if="${r.status.name() == 'available'}" class="text-green-600 font-semibold">Available</span>
-    <span th:if="${r.status.name() == 'deleted'}" class="text-red-600 font-semibold">Deleted</span>
-
+    <div class="py-2 px-4">
+        <span th:if="${r.status.name() == 'available'}" class="text-green-600 font-semibold">Available</span>
+        <span th:if="${r.status.name() == 'deleted'}" class="text-red-600 font-semibold">Deleted</span>
+    </div>
     <div class="py-2 px-4 space-x-2">
         <a th:href="@{/dashboard/room/editroom/{id}(id=${r.roomId})}"
            class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded">Sửa</a>
-        <button onclick="deleteRoom([[${r.roomId}]])"
-                class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded">Xóa</button>
+        <button th:onclick="'deleteRoom(' + ${r.roomId} + ')'"
+                class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded">
+            Xóa
+        </button>
     </div>
 </div>
+
+<div class="flex justify-center mt-6 space-x-2">
+    <!-- Nút Prev -->
+    <a th:if="${currentPage > 1}"
+       th:href="@{|/dashboard/room/page/${currentPage - 1}|}"
+       class="bg-gray-200 px-3 py-1 rounded hover:bg-gray-300">Prev</a>
+    <span th:unless="${currentPage > 1}" class="bg-gray-100 text-gray-400 px-3 py-1 rounded">Prev</span>
+
+    <!-- Danh sách trang -->
+    <span th:each="i : ${#numbers.sequence(1, totalPages)}">
+        <a th:if="${i != currentPage}"
+           th:href="@{|/dashboard/room/page/${i}|}"
+           class="bg-gray-200 px-3 py-1 rounded hover:bg-gray-300">[[${i}]]</a>
+        <span th:if="${i == currentPage}" class="bg-blue-500 text-white px-3 py-1 rounded">[[${i}]]</span>
+    </span>
+
+    <!-- Nút Next -->
+    <a th:if="${currentPage < totalPages}"
+       th:href="@{|/dashboard/room/page/${currentPage + 1}|}"
+       class="bg-gray-200 px-3 py-1 rounded hover:bg-gray-300">Next</a>
+    <span th:unless="${currentPage < totalPages}" class="bg-gray-100 text-gray-400 px-3 py-1 rounded">Next</span>
+</div>
+
+
 
 </body>
 </html>

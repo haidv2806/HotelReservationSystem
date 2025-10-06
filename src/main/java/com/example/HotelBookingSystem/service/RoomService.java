@@ -10,7 +10,9 @@ import com.example.HotelBookingSystem.repository.RoomRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -154,27 +156,52 @@ public class RoomService implements RoomServiceImpl {
 
     @Override
     public void delete(Integer id) {
-        roomRepository.findById(id).ifPresent(room -> {
-            room.setStatus(Room.Status.deleted);
-            roomRepository.save(room);
-        });
+        roomRepository.deleteById(id);
     }
 
+
+
+//    @Override
+//    public String deleteHandle(Integer id) {
+//        Optional<Room> result = this.findRoom(id);
+//
+//        if (result.isPresent()) {
+//            Room room = result.get();
+//            if (room.getStatus() == Room.Status.deleted) {
+//                return "Phòng đã bị xóa trước đó";
+//            }
+//            this.delete(id); // gọi hàm set status = deleted
+//            return "Xóa thành công";
+//        } else {
+//            return "Không tồn tại phòng";
+//        }
+//    }
 
     @Override
     public String deleteHandle(Integer id) {
-        Optional<Room> result = this.findRoom(id);
+        Optional<Room> roomOpt = roomRepository.findById(id);
+        if (roomOpt.isEmpty()) {
+            return "Room not found";
+        }
 
-        if (result.isPresent()) {
-            Room room = result.get();
-            if (room.getStatus() == Room.Status.deleted) {
-                return "Phòng đã bị xóa trước đó";
-            }
-            this.delete(id); // gọi hàm set status = deleted
-            return "Xóa thành công";
+        Room room = roomOpt.get();
+
+        // So sánh bằng Enum, không phải chuỗi
+        if (room.getStatus() == Room.Status.deleted) {
+            roomRepository.delete(room);
+            return "Room permanently deleted";
         } else {
-            return "Không tồn tại phòng";
+            room.setStatus(Room.Status.deleted);
+            roomRepository.save(room);
+            return "Room marked as deleted";
         }
     }
+
+    @Override
+    public Page<Room> findPaginated(int pageNo, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNo - 1, pageSize);
+        return roomRepository.findAll(pageable);
+    }
+
 }
 

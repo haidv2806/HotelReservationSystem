@@ -30,4 +30,5 @@ public interface RoomServiceImpl {
     void delete(Integer id);
 
     String deleteHandle(Integer id);
+    Page<Room> findPaginated(int pageNo, int pageSize);
 }
