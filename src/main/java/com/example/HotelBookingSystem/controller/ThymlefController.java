@@ -3,6 +3,7 @@ package com.example.HotelBookingSystem.controller;
 import com.example.HotelBookingSystem.dto.BookingResponseDTO;
 import com.example.HotelBookingSystem.dto.ManageRoomDTO;
 import com.example.HotelBookingSystem.dto.ManageRoomRequest;
+import com.example.HotelBookingSystem.dto.RoomDetailResponse;
 import com.example.HotelBookingSystem.service.BookingService;
 import com.example.HotelBookingSystem.service.ManageRoomService;
 import com.example.HotelBookingSystem.model.Admin;
@@ -17,12 +18,14 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.apache.commons.text.StringEscapeUtils;
 
 import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import org.jsoup.Jsoup;
 
@@ -126,39 +129,55 @@ public class ThymlefController {
 
     @GetMapping("/detail/{id}")
     public String detail(Model model, @PathVariable Integer id) {
-        model.addAttribute("room", roomService.getRoomDetail(id));
-        return "detail"; // trỏ tới file templates/index.html
+        RoomDetailResponse room = roomService.getRoomDetail(id);
+        String description = room.getDescription();
+
+        // 🔹 Bước 1: Giải mã các ký tự HTML (chuyển &lt;img&gt; → <img>)
+        description = StringEscapeUtils.unescapeHtml4(description);
+
+        // 🔹 Bước 2: Bỏ <p> nếu bên trong có <img>
+        description = description.replaceAll("(?i)<p[^>]*>\\s*(<img\\b[^>]*>)\\s*</p>", "$1");
+
+        room.setDescription(description);
+        model.addAttribute("room", room);
+
+        return "detail";
     }
+
     @GetMapping("/detailbooking/{id}")
     public String detailBooking(Model model,
-                                @PathVariable Integer id,
-                                @RequestParam(required = false) String checkInDate,
-                                @RequestParam(required = false) String checkOutDate) {
+            @PathVariable Integer id,
+            @RequestParam(required = false) String checkInDate,
+            @RequestParam(required = false) String checkOutDate) {
         // Lấy thông tin phòng
         com.example.HotelBookingSystem.dto.RoomDetailResponse room = roomService.getRoomDetail(id);
         model.addAttribute("room", room);
 
         // Nếu không có ngày gửi từ query param thì dùng mặc định
         model.addAttribute("checkInDate", checkInDate != null ? checkInDate : LocalDate.now().toString());
-        model.addAttribute("checkOutDate", checkOutDate != null ? checkOutDate : LocalDate.now().plusDays(1).toString());
+        model.addAttribute("checkOutDate",
+                checkOutDate != null ? checkOutDate : LocalDate.now().plusDays(1).toString());
 
         return "booking_user"; // trỏ tới file booking_user.html
     }
 
-    // Trang booking trực tiếp từ link /booking_user?roomId=xxx&checkInDate=xxx&checkOutDate=xxx
+    // Trang booking trực tiếp từ link
+    // /booking_user?roomId=xxx&checkInDate=xxx&checkOutDate=xxx
     @GetMapping("/booking_user")
     public String bookingPage(@RequestParam Integer roomId,
-                              @RequestParam(required = false) String checkInDate,
-                              @RequestParam(required = false) String checkOutDate,
-                              Model model) {
+            @RequestParam(required = false) String checkInDate,
+            @RequestParam(required = false) String checkOutDate,
+            Model model) {
         com.example.HotelBookingSystem.dto.RoomDetailResponse room = roomService.getRoomDetail(roomId);
         model.addAttribute("room", room);
 
         model.addAttribute("checkInDate", checkInDate != null ? checkInDate : LocalDate.now().toString());
-        model.addAttribute("checkOutDate", checkOutDate != null ? checkOutDate : LocalDate.now().plusDays(1).toString());
+        model.addAttribute("checkOutDate",
+                checkOutDate != null ? checkOutDate : LocalDate.now().plusDays(1).toString());
 
         return "booking_user";
     }
+
     @GetMapping("/dashboard/cusomer")
     public String index(Model model) {
         model.addAttribute("customers", customerRepository.findAll());
@@ -170,8 +189,7 @@ public class ThymlefController {
             @RequestParam(required = false, name = "startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate start,
             @RequestParam(required = false, name = "endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate end,
             @PageableDefault(size = 10, sort = "createAt", direction = Sort.Direction.ASC) Pageable pageable,
-            Model model
-    ) {
+            Model model) {
         // ✅ Lấy danh sách ManageRoom theo ngày
         Page<ManageRoomDTO> pageResult = manageRoomService.getAllManageRooms(start, end, pageable);
 
@@ -192,6 +210,7 @@ public class ThymlefController {
         model.addAttribute("manageRoom", new ManageRoomRequest());
         return "fragments/manageroom/manageroom-create"; // ✅ khớp đúng thư mục
     }
+
     // Nhận form thêm mới (POST)
     @PostMapping("/dashboard/manageroom/create")
     public String createManageRoom(@ModelAttribute ManageRoomRequest request, Model model) {
@@ -201,8 +220,7 @@ public class ThymlefController {
                     request.getEndDate(),
                     request.getRoomId(),
                     request.getNote(),
-                    request.getStatus()
-            );
+                    request.getStatus());
             return "redirect:/dashboard/manageroom";
         } catch (RuntimeException e) {
             model.addAttribute("errorMessage", e.getMessage());
@@ -219,11 +237,11 @@ public class ThymlefController {
         return mav;
     }
 
-    //cap nhat
+    // cap nhat
     @PostMapping("/dashboard/manageroom/update/{id}")
     public String updateManageRoom(@PathVariable Integer id,
-                                   @ModelAttribute ManageRoomDTO dto,
-                                   RedirectAttributes redirectAttributes) {
+            @ModelAttribute ManageRoomDTO dto,
+            RedirectAttributes redirectAttributes) {
         try {
             manageRoomService.update(id, dto);
             redirectAttributes.addFlashAttribute("success", "Cập nhật thành công!");
@@ -234,15 +252,13 @@ public class ThymlefController {
 
     }
 
-
     @GetMapping("/dashboard/bookingconfirm")
     public ModelAndView showBookings(
             @RequestParam(required = false, value = "search") String search,
             @RequestParam(required = false, name = "checkinDate") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate start,
             @RequestParam(required = false, name = "checkoutDate") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate end,
             @PageableDefault(size = 10, sort = "createAt", direction = Sort.Direction.ASC) Pageable pageable,
-            Model model
-    ) {
+            Model model) {
         // ✅ Làm sạch chuỗi tìm kiếm (trim + bỏ chuỗi rỗng)
         if (search != null) {
             search = search.trim();
@@ -266,18 +282,19 @@ public class ThymlefController {
         mav.addObject("start", start);
         mav.addObject("end", end);
 
-        // ✅ Đánh dấu để tự động cuộn xuống bảng (nếu bạn muốn behavior như "scrollToCards")
+        // ✅ Đánh dấu để tự động cuộn xuống bảng (nếu bạn muốn behavior như
+        // "scrollToCards")
         mav.addObject("scrollToTable", true);
 
         return mav;
     }
 
-    @GetMapping("/dashboard/room")
-    public String showRooms(Model model) {
-        List<Room> rooms = roomService.findAll(PageRequest.of(0, 100)).getContent();
-        model.addAttribute("rooms", rooms);
-        return "room"; // tìm file room.html
-    }
+    // @GetMapping("/dashboard/room")
+    // public String showRooms(Model model) {
+    // List<Room> rooms = roomService.findAll(PageRequest.of(0, 100)).getContent();
+    // model.addAttribute("rooms", rooms);
+    // return "room"; // tìm file room.html
+    // }
 
     // Hiển thị form login
     @GetMapping("/login")
@@ -290,14 +307,32 @@ public class ThymlefController {
         return "addroom";
     }
 
-    @GetMapping("/dashboard/room/editroom/{id}")
-    public String editRoom(@PathVariable("id") Integer id, Model model) {
-        Room room = roomService.findRoom(id).orElse(null);
-        if (room == null) {
-            return "redirect:/dashboard/room";
-        }
-        model.addAttribute("room", room);
-        return "editroom"; // templates/room/editroom.html
+    @GetMapping("/dashboard/room")
+    public String viewRoomsFirstPage() {
+        return "redirect:/dashboard/room/page/1";
     }
 
+    @GetMapping("/dashboard/room/page/{pageNo}")
+    public String listRooms(@PathVariable("pageNo") int pageNo, Model model) {
+        int pageSize = 5; // số phòng mỗi trang
+        Page<Room> roomPage = roomService.findAll(PageRequest.of(pageNo - 1, pageSize));
+
+        model.addAttribute("rooms", roomPage.getContent());
+        model.addAttribute("currentPage", pageNo);
+        model.addAttribute("totalPages", roomPage.getTotalPages());
+
+        return "room"; // trỏ đến room.html
+    }
+
+    @GetMapping("/dashboard/room/editroom/{id}")
+    public String showEditRoom(@PathVariable("id") Integer id, Model model) {
+        Room room = roomService.findRoom(id).orElseThrow(() -> new RuntimeException("Room not found"));
+        model.addAttribute("room", room);
+        return "editroom"; // ✅ đúng với vị trí file templates/editroom.html
+    }
+
+    // @GetMapping("/dashboard/room/editroom/{id}")
+    // public String showEditRoom() {
+    // return "editroom";
+    // }
 }
