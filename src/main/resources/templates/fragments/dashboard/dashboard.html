@@ -1,0 +1,166 @@
+<!-- fragments/dashboard/dashboard.html -->
+<div th:fragment="dashboard" class="bg-gray-100 min-h-screen p-8">
+
+  <h1 class="text-3xl font-bold text-gray-800 mb-6">Dashboard Overview</h1>
+
+  <!-- Tổng quan -->
+  <div class="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
+    <!-- Customers -->
+    <div class="flex items-center justify-between bg-gradient-to-r from-blue-500 to-indigo-600 p-6 rounded-2xl shadow-lg transform transition duration-300 hover:scale-105 hover:shadow-2xl">
+      <div>
+        <p class="text-blue-100 uppercase text-sm tracking-wide font-semibold">Customers</p>
+        <h2 class="text-4xl font-bold text-white mt-2" th:text="${totalCustomers}">0</h2>
+        <div class="text-sm text-blue-200 mt-1">Total Registered</div>
+      </div>
+      <div class="bg-white/20 p-3 rounded-full">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87M12 14a4 4 0 100-8 4 4 0 000 8z" />
+        </svg>
+      </div>
+    </div>
+
+    <!-- Rooms -->
+    <div class="flex items-center justify-between bg-gradient-to-r from-green-500 to-emerald-600 p-6 rounded-2xl shadow-lg transform transition duration-300 hover:scale-105 hover:shadow-2xl">
+      <div>
+        <p class="text-green-100 uppercase text-sm tracking-wide font-semibold">Rooms</p>
+        <h2 class="text-4xl font-bold text-white mt-2" th:text="${totalRooms}">0</h2>
+        <div class="text-sm text-green-200 mt-1">Available / Managed</div>
+      </div>
+      <div class="bg-white/20 p-3 rounded-full">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7h18M3 12h18M3 17h18" />
+        </svg>
+      </div>
+    </div>
+
+    <!-- Bookings -->
+    <div class="flex items-center justify-between bg-gradient-to-r from-yellow-500 to-orange-600 p-6 rounded-2xl shadow-lg transform transition duration-300 hover:scale-105 hover:shadow-2xl">
+      <div>
+        <p class="text-yellow-100 uppercase text-sm tracking-wide font-semibold">Bookings</p>
+        <h2 class="text-4xl font-bold text-white mt-2" th:text="${totalBookings}">0</h2>
+        <div class="text-sm text-yellow-200 mt-1">Active / Completed</div>
+      </div>
+      <div class="bg-white/20 p-3 rounded-full">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      </div>
+    </div>
+
+    <!-- Payments -->
+    <div class="flex items-center justify-between bg-gradient-to-r from-purple-500 to-fuchsia-600 p-6 rounded-2xl shadow-lg transform transition duration-300 hover:scale-105 hover:shadow-2xl">
+      <div>
+        <p class="text-purple-100 uppercase text-sm tracking-wide font-semibold">Payments</p>
+        <h2 class="text-4xl font-bold text-white mt-2" th:text="${totalPayments}">0</h2>
+        <div class="text-sm text-purple-200 mt-1">Transactions Recorded</div>
+      </div>
+      <div class="bg-white/20 p-3 rounded-full">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 1.343-3 3h6a3 3 0 00-3-3zM12 14v6m0-6a3 3 0 100-6 3 3 0 000 6z" />
+        </svg>
+      </div>
+    </div>
+
+    <!-- Revenue -->
+    <div class="flex items-center justify-between bg-gradient-to-r from-rose-500 to-pink-600 p-6 rounded-2xl shadow-lg transform transition duration-300 hover:scale-105 hover:shadow-2xl">
+      <div>
+        <p class="text-rose-100 uppercase text-sm tracking-wide font-semibold">Total Revenue</p>
+        <h2 class="text-3xl font-bold text-white mt-2" th:text="${#numbers.formatDecimal(totalRevenue, 0, 'COMMA', 0, 'POINT')} + ' ₫'">0 ₫</h2>
+        <div class="text-sm text-rose-200 mt-1">From Payments</div>
+      </div>
+      <div class="bg-white/20 p-3 rounded-full">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-3.313 0-6 2.687-6 6h12c0-3.313-2.687-6-6-6zM12 20v-4" />
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- Biểu đồ -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <div class="bg-white p-6 rounded-2xl shadow-md">
+      <h2 class="text-xl font-semibold mb-4 text-gray-700">Revenue by Month</h2>
+      <canvas id="revenueChart" height="120"></canvas>
+    </div>
+
+    <div class="bg-white p-6 rounded-2xl shadow-md">
+      <h2 class="text-xl font-semibold mb-4 text-gray-700">Booking Status</h2>
+      <canvas id="statusChart" height="120"></canvas>
+    </div>
+
+    <div class="bg-white p-6 rounded-2xl shadow-md">
+      <h2 class="text-xl font-semibold mb-4 text-gray-700">Top Room Types Booked</h2>
+      <canvas id="roomTypeChart" height="120"></canvas>
+    </div>
+  </div>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script th:inline="javascript">
+    const months = [[${months}]];
+    const revenues = [[${revenues}]];
+    const bookingStatusLabels = [[${bookingStatusLabels}]];
+    const bookingStatusCounts = [[${bookingStatusCounts}]];
+    const roomTypeLabels = [[${roomTypeLabels}]];
+    const roomTypeCounts = [[${roomTypeCounts}]];
+
+    // Revenue chart (Line)
+    new Chart(document.getElementById('revenueChart'), {
+      type: 'line',
+      data: {
+        labels: months,
+        datasets: [{
+          label: 'Revenue (VND)',
+          data: revenues,
+          fill: false,
+          borderColor: 'rgba(79,70,229,1)',
+          backgroundColor: 'rgba(79,70,229,0.2)',
+          tension: 0.3,
+          pointBackgroundColor: 'rgba(79,70,229,1)',
+          pointRadius: 5
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { position: 'top' } },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              callback: function(value) { return value.toLocaleString('vi-VN') + ' ₫'; }
+            }
+          }
+        }
+      }
+    });
+
+    // Booking Status chart
+    new Chart(document.getElementById('statusChart'), {
+      type: 'pie',
+      data: {
+        labels: bookingStatusLabels,
+        datasets: [{
+          data: bookingStatusCounts,
+          backgroundColor: ['#4F46E5','#22C55E','#FACC15','#EF4444','#6B7280']
+        }]
+      },
+      options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+    });
+
+    // Top Room Types chart
+    new Chart(document.getElementById('roomTypeChart'), {
+      type: 'bar',
+      data: {
+        labels: roomTypeLabels,
+        datasets: [{
+          label: 'Bookings by Room Type',
+          data: roomTypeCounts,
+          backgroundColor: 'rgba(34,197,94,0.6)',
+          borderColor: 'rgba(34,197,94,1)',
+          borderWidth: 1
+        }]
+      },
+      options: { responsive: true, plugins: { legend: { display: false } } }
+    });
+  </script>
+</div>

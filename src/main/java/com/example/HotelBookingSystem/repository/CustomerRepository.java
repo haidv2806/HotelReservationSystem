@@ -21,4 +21,5 @@ public interface CustomerRepository extends JpaRepository<Customer, Integer> {
     List<Customer> searchByKeyword(@Param("keyword") String keyword);
     @Query("SELECT c FROM Customer c WHERE LOWER(c.customerName) LIKE %:keyword% OR LOWER(c.phone) LIKE %:keyword%")
     Page<Customer> searchByKeywordPaged(@Param("keyword") String keyword, Pageable pageable);
+
 }

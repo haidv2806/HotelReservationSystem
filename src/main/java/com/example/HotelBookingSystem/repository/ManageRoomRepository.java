@@ -57,4 +57,6 @@ public interface ManageRoomRepository extends JpaRepository<ManageRoom, Integer>
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate,
             Pageable pageable);
+    @Query("SELECT m.status, COUNT(m) FROM ManageRoom m GROUP BY m.status")
+    List<Object[]> getManageRoomStats();
 }
