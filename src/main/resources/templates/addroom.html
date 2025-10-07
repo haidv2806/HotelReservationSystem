@@ -11,7 +11,7 @@
             font-family: 'Segoe UI', sans-serif;
         }
         .card {
-            max-width: 600px;
+            max-width: 650px;
             margin: 60px auto;
             border-radius: 12px;
         }
@@ -27,6 +27,9 @@
             font-size: 0.95rem;
         }
     </style>
+
+    <!-- ✅ Thêm CKEditor 5 -->
+    <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
 </head>
 <body>
 
@@ -58,9 +61,10 @@
                 <input type="number" class="form-control form-control-sm" id="price" name="price" required>
             </div>
 
+            <!-- ✅ CKEditor thay cho textarea -->
             <div class="mb-3">
                 <label for="description" class="form-label">Mô tả</label>
-                <textarea class="form-control form-control-sm" id="description" name="description" rows="2"></textarea>
+                <textarea class="form-control form-control-sm" id="description" name="description" rows="3"></textarea>
             </div>
 
             <div class="mb-3">
@@ -87,6 +91,20 @@
 </div>
 
 <script>
+    // ✅ Khởi tạo CKEditor
+    let editorInstance;
+    ClassicEditor
+        .create(document.querySelector('#description'), {
+            toolbar: ['bold', 'italic', 'link', 'undo', 'redo', 'numberedList', 'bulletedList'],
+        })
+        .then(editor => {
+            editorInstance = editor;
+        })
+        .catch(error => {
+            console.error(error);
+        });
+
+    // ✅ Gửi dữ liệu form với CKEditor
     document.getElementById("addRoomForm").addEventListener("submit", async function (e) {
         e.preventDefault();
 
@@ -94,7 +112,7 @@
             roomName: document.getElementById("roomName").value,
             type: document.getElementById("type").value,
             price: parseFloat(document.getElementById("price").value),
-            description: document.getElementById("description").value,
+            description: editorInstance.getData(), // ✅ Lấy nội dung từ CKEditor
             img: document.getElementById("img").value,
             status: document.getElementById("status").value
         };
@@ -110,14 +128,15 @@
 
             if (response.ok) {
                 const data = await response.json();
-                messageEl.innerHTML = `<span class='text-success'>Thêm phòng thành công (ID: ${data.id})!</span>`;
+                messageEl.innerHTML = `<span class='text-success'>✅ Thêm phòng thành công (ID: ${data.id})!</span>`;
                 document.getElementById("addRoomForm").reset();
+                editorInstance.setData("");
             } else {
-                messageEl.innerHTML = `<span class='text-danger'>Lỗi khi thêm phòng (Mã lỗi: ${response.status})</span>`;
+                messageEl.innerHTML = `<span class='text-danger'>❌ Lỗi khi thêm phòng (Mã lỗi: ${response.status})</span>`;
             }
         } catch (error) {
             document.getElementById("message").innerHTML =
-                `<span class='text-danger'>Lỗi kết nối: ${error.message}</span>`;
+                `<span class='text-danger'>⚠️ Lỗi kết nối: ${error.message}</span>`;
         }
     });
 </script>
