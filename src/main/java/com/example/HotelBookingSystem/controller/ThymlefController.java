@@ -23,6 +23,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import org.jsoup.Jsoup;
 
@@ -283,12 +284,12 @@ public class ThymlefController {
         return mav;
     }
 
-    @GetMapping("/dashboard/room")
-    public String showRooms(Model model) {
-        List<Room> rooms = roomService.findAll(PageRequest.of(0, 100)).getContent();
-        model.addAttribute("rooms", rooms);
-        return "room"; // tìm file room.html
-    }
+//    @GetMapping("/dashboard/room")
+//    public String showRooms(Model model) {
+//        List<Room> rooms = roomService.findAll(PageRequest.of(0, 100)).getContent();
+//        model.addAttribute("rooms", rooms);
+//        return "room"; // tìm file room.html
+//    }
 
     // Hiển thị form login
     @GetMapping("/login")
@@ -301,14 +302,32 @@ public class ThymlefController {
         return "addroom";
     }
 
-    @GetMapping("/dashboard/room/editroom/{id}")
-    public String editRoom(@PathVariable("id") Integer id, Model model) {
-        Room room = roomService.findRoom(id).orElse(null);
-        if (room == null) {
-            return "redirect:/dashboard/room";
-        }
-        model.addAttribute("room", room);
-        return "editroom"; // templates/room/editroom.html
+    @GetMapping("/dashboard/room")
+    public String viewRoomsFirstPage() {
+        return "redirect:/dashboard/room/page/1";
     }
 
+    @GetMapping("/dashboard/room/page/{pageNo}")
+    public String listRooms(@PathVariable("pageNo") int pageNo, Model model) {
+        int pageSize = 5; // số phòng mỗi trang
+        Page<Room> roomPage = roomService.findAll(PageRequest.of(pageNo - 1, pageSize));
+
+        model.addAttribute("rooms", roomPage.getContent());
+        model.addAttribute("currentPage", pageNo);
+        model.addAttribute("totalPages", roomPage.getTotalPages());
+
+        return "room"; // trỏ đến room.html
+    }
+
+    @GetMapping("/dashboard/room/editroom/{id}")
+    public String showEditRoom(@PathVariable("id") Integer id, Model model) {
+        Room room = roomService.findRoom(id).orElseThrow(() -> new RuntimeException("Room not found"));
+        model.addAttribute("room", room);
+        return "editroom"; // ✅ đúng với vị trí file templates/editroom.html
+    }
+
+//    @GetMapping("/dashboard/room/editroom/{id}")
+//    public String showEditRoom() {
+//        return "editroom";
+//    }
 }
