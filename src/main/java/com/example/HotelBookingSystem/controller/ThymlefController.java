@@ -4,6 +4,7 @@ import com.example.HotelBookingSystem.dto.BookingResponseDTO;
 import com.example.HotelBookingSystem.dto.ManageRoomDTO;
 import com.example.HotelBookingSystem.dto.ManageRoomRequest;
 import com.example.HotelBookingSystem.dto.RoomDetailResponse;
+import com.example.HotelBookingSystem.repository.*;
 import com.example.HotelBookingSystem.service.BookingService;
 import com.example.HotelBookingSystem.service.ManageRoomService;
 import com.example.HotelBookingSystem.model.Admin;
@@ -21,21 +22,14 @@ import org.springframework.web.bind.annotation.*;
 import org.apache.commons.text.StringEscapeUtils;
 
 import java.math.BigDecimal;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import org.jsoup.Jsoup;
 
-import com.example.HotelBookingSystem.model.Booking;
-import com.example.HotelBookingSystem.model.ManageRoom;
 import com.example.HotelBookingSystem.model.Room;
-import com.example.HotelBookingSystem.repository.BookingRepository;
-import com.example.HotelBookingSystem.repository.CustomerRepository;
-import com.example.HotelBookingSystem.repository.ManageRoomRepository;
-import com.example.HotelBookingSystem.repository.RoomRepository;
 import com.example.HotelBookingSystem.service.RoomService;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -64,7 +58,8 @@ public class ThymlefController {
 
     @Autowired
     private ManageRoomService manageRoomService;
-
+    @Autowired
+    private PaymentRepository paymentRepository;
     @GetMapping("/")
     public String index(Model model,
             @RequestParam(defaultValue = "0") int page,
@@ -177,11 +172,40 @@ public class ThymlefController {
 
         return "booking_user";
     }
+    @GetMapping("/dashboard/customer")
+    public String customerDashboard(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(value = "keyword", required = false) String keyword,
+            Model model) {
 
-    @GetMapping("/dashboard/cusomer")
-    public String index(Model model) {
-        model.addAttribute("customers", customerRepository.findAll());
-        return "customer"; // trỏ tới file templates/index.html
+        Pageable pageable = PageRequest.of(page, size, Sort.by("customerId").ascending());
+        Page<com.example.HotelBookingSystem.model.Customer> customerPage;
+
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            customerPage = customerRepository.searchByKeywordPaged(keyword.toLowerCase(), pageable);
+            model.addAttribute("keyword", keyword);
+        } else {
+            customerPage = customerRepository.findAll(pageable);
+        }
+
+        model.addAttribute("customers", customerPage.getContent());
+        model.addAttribute("currentPage", customerPage.getNumber());
+        model.addAttribute("totalPages", customerPage.getTotalPages());
+
+        return "customer";
+    }
+    @GetMapping("/api/customer/search")
+    @ResponseBody
+    public List<com.example.HotelBookingSystem.model.Customer> searchCustomers(
+            @RequestParam(value = "keyword", required = false) String keyword) {
+
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return customerRepository.findAll();
+        }
+
+        keyword = keyword.trim().toLowerCase();
+        return customerRepository.searchByKeyword(keyword);
     }
 
     @GetMapping("/dashboard/manageroom")
@@ -296,13 +320,7 @@ public class ThymlefController {
     // return "room"; // tìm file room.html
     // }
 
-    // Hiển thị form login
-    @GetMapping("/login")
-    public String loginForm() {
-        return "login";
-    }
-
-    @GetMapping("/dashboard/room/addroom")
+        @GetMapping("/dashboard/room/addroom")
     public String addRoomPage() {
         return "addroom";
     }
@@ -335,4 +353,75 @@ public class ThymlefController {
     // public String showEditRoom() {
     // return "editroom";
     // }
+
+    // Hiển thị form login
+    @GetMapping("/login")
+    public String loginForm() {
+        return "login";
+    }
+    @GetMapping("/dashboard")
+    public String dashboard(Model model) {
+        // === Thống kê tổng số bản ghi ===
+        long totalCustomers = customerRepository.count();
+        long totalRooms = roomRepository.count();
+        long totalBookings = bookingRepository.count();
+        long totalPayments = paymentRepository.count(); // 🧩 thêm repo payment
+
+        // === Doanh thu theo tháng ===
+        List<Object[]> revenueByMonth = bookingRepository.getRevenueByMonth();
+        List<String> months = new ArrayList<>();
+        List<BigDecimal> revenues = new ArrayList<>();
+        for (Object[] obj : revenueByMonth) {
+            months.add(obj[0].toString());
+            revenues.add((BigDecimal) obj[1]);
+        }
+
+        // === Thống kê trạng thái booking ===
+        List<Object[]> bookingStatusData = bookingRepository.getBookingStatusStats();
+        List<String> bookingStatusLabels = new ArrayList<>();
+        List<Long> bookingStatusCounts = new ArrayList<>();
+        for (Object[] obj : bookingStatusData) {
+            bookingStatusLabels.add(obj[0].toString());
+            bookingStatusCounts.add((Long) obj[1]);
+        }
+
+        // === Thống kê loại phòng được đặt nhiều nhất ===
+        List<Object[]> roomTypePopular = bookingRepository.getTopRoomTypesBooked();
+        List<String> roomTypeLabels = new ArrayList<>();
+        List<Long> roomTypeCounts = new ArrayList<>();
+
+        for (Object[] obj : roomTypePopular) {
+            roomTypeLabels.add(obj[0].toString());
+            roomTypeCounts.add((Long) obj[1]);
+        }
+
+        if (roomTypeLabels.isEmpty()) {
+            roomTypeLabels.add("No Data");
+            roomTypeCounts.add(0L);
+        }
+
+// === Truyền dữ liệu xuống view ===
+        model.addAttribute("roomTypeLabels", roomTypeLabels);
+        model.addAttribute("roomTypeCounts", roomTypeCounts);
+
+        // === Tổng doanh thu từ payment ===
+        BigDecimal totalRevenue = bookingRepository.getTotalRevenueConfirmed();
+
+        // === Truyền dữ liệu xuống view ===
+        model.addAttribute("totalCustomers", totalCustomers);
+        model.addAttribute("totalRooms", totalRooms);
+        model.addAttribute("totalBookings", totalBookings);
+        model.addAttribute("totalPayments", totalPayments);
+        model.addAttribute("totalRevenue", totalRevenue);
+
+        model.addAttribute("months", months);
+        model.addAttribute("revenues", revenues);
+        model.addAttribute("bookingStatusLabels", bookingStatusLabels);
+        model.addAttribute("bookingStatusCounts", bookingStatusCounts);
+
+        model.addAttribute("roomTypeLabels", roomTypeLabels);
+        model.addAttribute("roomTypeCounts", roomTypeCounts);
+
+        return "dashboard";
+    }
 }
