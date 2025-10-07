@@ -24,6 +24,7 @@ import org.apache.commons.text.StringEscapeUtils;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -60,6 +61,7 @@ public class ThymlefController {
     private ManageRoomService manageRoomService;
     @Autowired
     private PaymentRepository paymentRepository;
+
     @GetMapping("/")
     public String index(Model model,
             @RequestParam(defaultValue = "0") int page,
@@ -172,6 +174,7 @@ public class ThymlefController {
 
         return "booking_user";
     }
+
     @GetMapping("/dashboard/customer")
     public String customerDashboard(
             @RequestParam(defaultValue = "0") int page,
@@ -195,6 +198,7 @@ public class ThymlefController {
 
         return "customer";
     }
+
     @GetMapping("/api/customer/search")
     @ResponseBody
     public List<com.example.HotelBookingSystem.model.Customer> searchCustomers(
@@ -320,7 +324,7 @@ public class ThymlefController {
     // return "room"; // tìm file room.html
     // }
 
-        @GetMapping("/dashboard/room/addroom")
+    @GetMapping("/dashboard/room/addroom")
     public String addRoomPage() {
         return "addroom";
     }
@@ -335,7 +339,24 @@ public class ThymlefController {
         int pageSize = 5; // số phòng mỗi trang
         Page<Room> roomPage = roomService.findAll(PageRequest.of(pageNo - 1, pageSize));
 
-        model.addAttribute("rooms", roomPage.getContent());
+        List<Room> rooms = roomService.findAll(PageRequest.of(pageNo - 1, pageSize)).getContent();
+
+        for (Room r : rooms) {
+            // 1️⃣ Loại bỏ thẻ HTML
+            String text = Jsoup.parse(Jsoup.parse(r.getDescription()).text()).text();
+            
+
+            // 2️⃣ Cắt còn 30 từ
+            String[] words = text.split("\\s+");
+            if (words.length > 30) {
+                text = String.join(" ", Arrays.copyOfRange(words, 0, 30)) + "...";
+            }
+
+            // 3️⃣ Gán lại mô tả rút gọn
+            r.setDescription(text);
+        }
+        
+        model.addAttribute("rooms", rooms);
         model.addAttribute("currentPage", pageNo);
         model.addAttribute("totalPages", roomPage.getTotalPages());
 
@@ -359,6 +380,7 @@ public class ThymlefController {
     public String loginForm() {
         return "login";
     }
+
     @GetMapping("/dashboard")
     public String dashboard(Model model) {
         // === Thống kê tổng số bản ghi ===
@@ -400,7 +422,7 @@ public class ThymlefController {
             roomTypeCounts.add(0L);
         }
 
-// === Truyền dữ liệu xuống view ===
+        // === Truyền dữ liệu xuống view ===
         model.addAttribute("roomTypeLabels", roomTypeLabels);
         model.addAttribute("roomTypeCounts", roomTypeCounts);
 

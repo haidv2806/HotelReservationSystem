@@ -38,42 +38,64 @@
                 phòng</a>
         </div>
 
-        <!-- Header Grid -->
-        <div class="grid grid-cols-8 bg-gray-200 font-semibold text-left rounded-t-lg">
-            <div class="py-2 px-4">ID</div>
-            <div class="py-2 px-4">Tên phòng</div>
-            <div class="py-2 px-4">Loại</div>
-            <div class="py-2 px-4">Giá</div>
-            <div class="py-2 px-4">Mô tả</div>
-            <div class="py-2 px-4">Ảnh</div>
-            <div class="py-2 px-4">Trạng thái</div>
-            <div class="py-2 px-4">Hành động</div>
+        <!-- Bảng danh sách phòng -->
+        <!-- Bọc toàn bộ bảng trong một div có giới hạn chiều ngang -->
+        <div class="bg-white rounded shadow overflow-hidden max-w-6xl">
+            <table class="min-w-full text-sm">
+                <thead class="bg-gray-200 text-left">
+                    <tr>
+                        <th class="py-2 px-4 ">ID</th>
+                        <th class="py-2 px-4 ">Tên phòng</th>
+                        <th class="py-2 px-4 ">Loại</th>
+                        <th class="py-2 px-4 ">Giá</th>
+                        <th class="py-2 px-4 ">Mô tả</th> <!-- 👈 Giới hạn mô tả -->
+                        <th class="py-2 px-4 ">Ảnh</th>
+                        <th class="py-2 px-4 ">Trạng thái</th>
+                        <th class="py-2 px-4 text-center">Hành động</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr th:each="r : ${rooms}" class="hover:bg-gray-50 align-top">
+                        <td class="py-2 px-4 border-b " th:text="${r.roomId}"></td>
+                        <td class="py-2 px-4 border-b" th:text="${r.roomName}"></td>
+                        <td class="py-2 px-4 border-b" th:text="${r.type}"></td>
+                        <td class="py-2 px-4 border-b"
+                            th:text="${#numbers.formatDecimal(r.price, 1, 'COMMA', 2, 'POINT')}"></td>
+
+                        <!-- 👇 Mô tả: ẩn phần tràn + hiển thị "..." -->
+                        <td class="py-2 px-4 max-w-xs border-b overflow-hidden text-ellipsis line-clamp-3"
+                            th:utext="${r.description}">
+                        </td>
+
+
+                        <td class="py-2 px-4 border-b">
+                            <img th:src="${r.img}" alt="Room Image" class="w-20 h-16 object-cover rounded">
+                        </td>
+
+                        <td class="py-2 px-4 border-b">
+                            <span th:if="${r.status.name() == 'available'}"
+                                class="text-green-600 font-semibold">Available</span>
+                            <span th:if="${r.status.name() == 'deleted'}"
+                                class="text-red-600 font-semibold">Deleted</span>
+                        </td>
+
+                        <td class="py-2 px-4 border-b space-x-2">
+                            <a th:href="@{/dashboard/room/editroom/{id}(id=${r.roomId})}"
+                                class="bg-yellow-400 text-white px-3 py-1 rounded hover:bg-yellow-500">
+                                ✏️ Sửa
+                            </a>
+                            <button class="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
+                                th:onclick="'deleteRoom(' + ${r.roomId} + ')'">
+                                🗑️ Xóa
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
 
-        <!-- Data Grid -->
-        <div th:each="r : ${rooms}" class="grid grid-cols-8 bg-white border-b items-center">
-            <div class="py-2 px-4" th:text="${r.roomId}"></div>
-            <div class="py-2 px-4" th:text="${r.roomName}"></div>
-            <div class="py-2 px-4" th:text="${r.type}"></div>
-            <div class="py-2 px-4" th:text="${#numbers.formatDecimal(r.price, 1, 'COMMA', 2, 'POINT')}"></div>
-            <div class="py-2 px-4 truncate max-w-[120px]" th:utext="${r.description}"></div>
-            <div class="py-2 px-4">
-                <img th:src="${r.img}" alt="Room Image" class="w-20 h-16 object-cover rounded">
-            </div>
-            <div class="py-2 px-4">
-                <span th:if="${r.status.name() == 'available'}" class="text-green-600 font-semibold">Available</span>
-                <span th:if="${r.status.name() == 'deleted'}" class="text-red-600 font-semibold">Deleted</span>
-            </div>
-            <div class="py-2 px-4 space-x-2">
-                <a th:href="@{/dashboard/room/editroom/{id}(id=${r.roomId})}"
-                    class="bg-yellow-500 hover:bg-yellow-600 text-white px-2 py-1 rounded">Sửa</a>
-                <button th:onclick="'deleteRoom(' + ${r.roomId} + ')'"
-                    class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded">
-                    Xóa
-                </button>
 
-            </div>
-        </div>
 
         <div class="flex justify-center mt-6 space-x-2">
             <!-- Nút Prev -->
