@@ -1,55 +1,78 @@
 <div th:fragment="sidebar" class="flex h-screen w-64 flex-col bg-gray-900 text-white" style="position: sticky; top: 0;">
     <!-- Logo -->
     <div class="flex items-center justify-center h-16 border-b border-gray-800">
-        <img th:src="@{/images/logo.svg}" src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=gray&shade=500" alt="Your Company" class="h-10 w-10"/>
+        <!-- SVG icon -->
+        <svg class="h-10 w-10" fill="#fff" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
+            <path
+                d="M12.691406 0L11.564453 2.3320312L9 2.6386719L10.949219 4.3613281L10.435547 7L12.691406 5.6816406L14.949219 7L14.435547 4.3613281L16.384766 2.6386719L13.820312 2.3320312L12.691406 0 z M 14.949219 7L10.435547 7L9.3007812 7C6.3307812 7 4 9.3307812 4 12.300781L4 45C4 45.55 4.45 46 5 46L22 46L22 36L28 36L28 46L45 46C45.55 46 46 45.55 46 45L46 12.300781C46 9.3307812 43.669219 7 40.699219 7L39.564453 7L35.050781 7L31.359375 7L26.845703 7L23.154297 7L18.640625 7L14.949219 7 z M 18.640625 7L20.896484 5.6816406L23.154297 7L22.640625 4.3613281L24.589844 2.6386719L22.025391 2.3320312L20.896484 0L19.769531 2.3320312L17.205078 2.6386719L19.154297 4.3613281L18.640625 7 z M 26.845703 7L29.103516 5.6816406L31.359375 7L30.845703 4.3613281L32.794922 2.6386719L30.230469 2.3320312L29.103516 0L27.974609 2.3320312L25.410156 2.6386719L27.359375 4.3613281L26.845703 7 z M 35.050781 7L37.308594 5.6816406L39.564453 7L39.050781 4.3613281L41 2.6386719L38.435547 2.3320312L37.308594 0L36.179688 2.3320312L33.615234 2.6386719L35.564453 4.3613281L35.050781 7 z M 10 12L16 12L16 16L10 16L10 12 z M 22 12L28 12L28 16L22 16L22 12 z M 34 12L40 12L40 16L34 16L34 12 z M 10 20L16 20L16 24L10 24L10 20 z M 22 20L28 20L28 24L22 24L22 20 z M 34 20L40 20L40 24L34 24L34 20 z M 10 28L16 28L16 32L10 32L10 28 z M 22 28L28 28L28 32L22 32L22 28 z M 34 28L40 28L40 32L34 32L34 28 z M 10 36L16 36L16 40L10 40L10 36 z M 34 36L40 36L40 40L34 40L34 36 z" 
+                stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+
+        <!-- Text -->
         <span class="ml-2 text-xl font-bold">MyHotel</span>
     </div>
+
 
     <!-- Menu -->
     <nav class="flex-1 px-2 py-4 space-y-1">
         <!-- Dashboard -->
-        <a th:href="@{/dashboard}" class="flex items-center px-4 py-3 rounded-lg hover:bg-gray-800 transition-colors duration-150">
+        <a th:href="@{/dashboard}"
+            class="flex items-center px-4 py-3 rounded-lg hover:bg-gray-800 transition-colors duration-150">
             <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-                <path d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" stroke-linecap="round" stroke-linejoin="round"/>
+                <path
+                    d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"
+                    stroke-linecap="round" stroke-linejoin="round" />
             </svg>
             Dashboard
         </a>
 
         <!-- Customer -->
-        <a th:href="@{/dashboard/customer}" class="flex items-center px-4 py-3 rounded-lg hover:bg-gray-800 transition-colors duration-150">
+        <a th:href="@{/dashboard/customer}"
+            class="flex items-center px-4 py-3 rounded-lg hover:bg-gray-800 transition-colors duration-150">
             <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-                <path d="M5.121 17.804A4.992 4.992 0 0 1 12 15a4.992 4.992 0 0 1 6.879 2.804M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10Z" stroke-linecap="round" stroke-linejoin="round"/>
+                <path
+                    d="M5.121 17.804A4.992 4.992 0 0 1 12 15a4.992 4.992 0 0 1 6.879 2.804M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10Z"
+                    stroke-linecap="round" stroke-linejoin="round" />
             </svg>
             Customer
         </a>
 
         <!-- Manage Room -->
-        <a th:href="@{/dashboard/manageroom}" class="flex items-center px-4 py-3 rounded-lg hover:bg-gray-800 transition-colors duration-150">
+        <a th:href="@{/dashboard/manageroom}"
+            class="flex items-center px-4 py-3 rounded-lg hover:bg-gray-800 transition-colors duration-150">
             <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-                <path d="M3 9.75V6a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 6v3.75M3 9.75v9a2.25 2.25 0 0 0 2.25 2.25h13.5A2.25 2.25 0 0 0 21 18.75v-9M3 9.75h18M12 9.75v9" stroke-linecap="round" stroke-linejoin="round"/>
+                <path
+                    d="M3 9.75V6a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 6v3.75M3 9.75v9a2.25 2.25 0 0 0 2.25 2.25h13.5A2.25 2.25 0 0 0 21 18.75v-9M3 9.75h18M12 9.75v9"
+                    stroke-linecap="round" stroke-linejoin="round" />
             </svg>
             Manage Room
         </a>
 
         <!-- Booking Confirm -->
-        <a th:href="@{/dashboard/bookingconfirm}" class="flex items-center px-4 py-3 rounded-lg hover:bg-gray-800 transition-colors duration-150">
+        <a th:href="@{/dashboard/bookingconfirm}"
+            class="flex items-center px-4 py-3 rounded-lg hover:bg-gray-800 transition-colors duration-150">
             <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-                <path d="M9 12l2 2 4-4M21 12c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8Z" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M9 12l2 2 4-4M21 12c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8Z"
+                    stroke-linecap="round" stroke-linejoin="round" />
             </svg>
             Booking Confirm
         </a>
 
         <a th:href="@{/dashboard/room}" class="flex items-center px-3 py-2 rounded-lg hover:bg-gray-800">
             <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-                <path d="M12 2.25h6.75a.75.75 0 0 1 .75.75v18a.75.75 0 0 1-.75.75H5.25a.75.75 0 0 1-.75-.75v-18a.75.75 0 0 1 .75-.75H12Z" stroke-linecap="round" stroke-linejoin="round"/>
+                <path
+                    d="M12 2.25h6.75a.75.75 0 0 1 .75.75v18a.75.75 0 0 1-.75.75H5.25a.75.75 0 0 1-.75-.75v-18a.75.75 0 0 1 .75-.75H12Z"
+                    stroke-linecap="round" stroke-linejoin="round" />
             </svg>
             room
         </a>
 
         <!-- Reports -->
-        <a th:href="@{/reports}" class="flex items-center px-4 py-3 rounded-lg hover:bg-gray-800 transition-colors duration-150">
+        <a href="https://github.com/haidv2806/HotelReservationSystem.git"
+            class="flex items-center px-4 py-3 rounded-lg hover:bg-gray-800 transition-colors duration-150">
             <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-                <path d="M9 17v-6h6v6M3 21h18v-2a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v2Z" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M9 17v-6h6v6M3 21h18v-2a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v2Z" stroke-linecap="round"
+                    stroke-linejoin="round" />
             </svg>
             Reports
         </a>
@@ -60,26 +83,34 @@
         <h3 class="px-4 text-xs font-semibold text-gray-400 uppercase">Your Teams</h3>
         <ul class="mt-2 space-y-1">
             <li>
-                <a th:href="@{/teams/heroicons}" class="flex items-center px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors duration-150">
-                    <span class="flex h-8 w-8 items-center justify-center rounded-full bg-gray-700 text-white font-bold mr-3">H</span>
+                <a href="https://github.com/haidv2806"
+                    class="flex items-center px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors duration-150">
+                    <span
+                        class="flex h-8 w-8 items-center justify-center rounded-full bg-gray-700 text-white font-bold mr-3">H</span>
                     Hải
                 </a>
             </li>
             <li>
-                <a th:href="@{/teams/tailwind}" class="flex items-center px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors duration-150">
-                    <span class="flex h-8 w-8 items-center justify-center rounded-full bg-gray-700 text-white font-bold mr-3">P</span>
+                <a href="https://github.com/phmVan242"
+                    class="flex items-center px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors duration-150">
+                    <span
+                        class="flex h-8 w-8 items-center justify-center rounded-full bg-gray-700 text-white font-bold mr-3">P</span>
                     Phong
                 </a>
             </li>
             <li>
-                <a th:href="@{/teams/workcation}" class="flex items-center px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors duration-150">
-                    <span class="flex h-8 w-8 items-center justify-center rounded-full bg-gray-700 text-white font-bold mr-3">H</span>
+                <a href="https://github.com/ngtrunghieu116"
+                    class="flex items-center px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors duration-150">
+                    <span
+                        class="flex h-8 w-8 items-center justify-center rounded-full bg-gray-700 text-white font-bold mr-3">H</span>
                     Hiếu
                 </a>
             </li>
             <li>
-                <a th:href="@{/teams/workcation}" class="flex items-center px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors duration-150">
-                    <span class="flex h-8 w-8 items-center justify-center rounded-full bg-gray-700 text-white font-bold mr-3">L</span>
+                <a href="https://github.com/tliemne"
+                    class="flex items-center px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors duration-150">
+                    <span
+                        class="flex h-8 w-8 items-center justify-center rounded-full bg-gray-700 text-white font-bold mr-3">L</span>
                     Liêm
                 </a>
             </li>
