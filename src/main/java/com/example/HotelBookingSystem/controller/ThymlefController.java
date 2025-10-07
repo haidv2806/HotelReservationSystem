@@ -159,10 +159,21 @@ public class ThymlefController {
 
         return "booking_user";
     }
-    @GetMapping("/dashboard/cusomer")
-    public String index(Model model) {
-        model.addAttribute("customers", customerRepository.findAll());
-        return "customer"; // trỏ tới file templates/index.html
+    @GetMapping("/dashboard/customer")
+    public String customerDashboard(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            Model model) {
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by("customerId").ascending());
+        Page<com.example.HotelBookingSystem.model.Customer> customerPage =
+                customerRepository.findAll(pageable);
+
+        model.addAttribute("customers", customerPage.getContent());
+        model.addAttribute("currentPage", customerPage.getNumber());
+        model.addAttribute("totalPages", customerPage.getTotalPages());
+
+        return "customer";
     }
 
     @GetMapping("/dashboard/manageroom")
