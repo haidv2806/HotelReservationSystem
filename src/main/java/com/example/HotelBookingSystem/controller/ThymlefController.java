@@ -158,17 +158,36 @@ public class ThymlefController {
     public String customerDashboard(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
+            @RequestParam(value = "keyword", required = false) String keyword,
             Model model) {
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("customerId").ascending());
-        Page<com.example.HotelBookingSystem.model.Customer> customerPage =
-                customerRepository.findAll(pageable);
+        Page<com.example.HotelBookingSystem.model.Customer> customerPage;
+
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            customerPage = customerRepository.searchByKeywordPaged(keyword.toLowerCase(), pageable);
+            model.addAttribute("keyword", keyword);
+        } else {
+            customerPage = customerRepository.findAll(pageable);
+        }
 
         model.addAttribute("customers", customerPage.getContent());
         model.addAttribute("currentPage", customerPage.getNumber());
         model.addAttribute("totalPages", customerPage.getTotalPages());
 
         return "customer";
+    }
+    @GetMapping("/api/customer/search")
+    @ResponseBody
+    public List<com.example.HotelBookingSystem.model.Customer> searchCustomers(
+            @RequestParam(value = "keyword", required = false) String keyword) {
+
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return customerRepository.findAll();
+        }
+
+        keyword = keyword.trim().toLowerCase();
+        return customerRepository.searchByKeyword(keyword);
     }
 
     @GetMapping("/dashboard/manageroom")
