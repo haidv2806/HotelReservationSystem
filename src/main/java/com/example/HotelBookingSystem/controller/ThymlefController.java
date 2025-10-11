@@ -166,7 +166,7 @@ public class ThymlefController {
 
     @GetMapping("/dashboard/room/page/{pageNo}")
     public String listRooms(@PathVariable("pageNo") int pageNo, Model model) {
-        int pageSize = 5; // số phòng mỗi trang
+        int pageSize = 10; // số phòng mỗi trang
         Page<Room> roomPage = roomService.findAll(PageRequest.of(pageNo - 1, pageSize));
 
         model.addAttribute("rooms", roomPage.getContent());
