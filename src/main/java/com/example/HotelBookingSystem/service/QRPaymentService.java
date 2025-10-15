@@ -19,7 +19,7 @@ public class QRPaymentService {
                 + "?acc=" + (accountNo != null ? accountNo.trim() : "")
                 + "&bank=" + (bankCode != null ? bankCode.trim() : "")
                 + "&amount=" + (amount != null ? amount.toString().trim() : "")
-                + "&des=" + (description != null ? description.trim() : "")
+                // + "&des=" + (description != null ? description.trim() : "")
                 + "&template=compact";
     }
 }

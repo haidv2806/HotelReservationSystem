@@ -56,31 +56,31 @@
                 </thead>
 
                 <tbody>
-                    <tr th:each="r : ${rooms}" class="hover:bg-gray-50 align-top">
-                        <td class="py-2 px-4 border-b " th:text="${r.roomId}"></td>
-                        <td class="py-2 px-4 border-b" th:text="${r.roomName}"></td>
-                        <td class="py-2 px-4 border-b" th:text="${r.type}"></td>
-                        <td class="py-2 px-4 border-b"
+                    <tr th:each="r : ${rooms}" class="border-b hover:bg-gray-50 align-top">
+                        <td class="py-2 px-4 " th:text="${r.roomId}"></td>
+                        <td class="py-2 px-4 " th:text="${r.roomName}"></td>
+                        <td class="py-2 px-4 " th:text="${r.type}"></td>
+                        <td class="py-2 px-4"
                             th:text="${#numbers.formatDecimal(r.price, 1, 'COMMA', 2, 'POINT')}"></td>
 
                         <!-- 👇 Mô tả: ẩn phần tràn + hiển thị "..." -->
-                        <td class="py-2 px-4 max-w-xs border-b overflow-hidden text-ellipsis line-clamp-3"
+                        <td class="py-2 px-4 max-w-xs overflow-hidden text-ellipsis line-clamp-3"
                             th:utext="${r.description}">
                         </td>
 
 
-                        <td class="py-2 px-4 border-b">
+                        <td class="py-2 px-4">
                             <img th:src="${r.img}" alt="Room Image" class="w-20 h-16 object-cover rounded">
                         </td>
 
-                        <td class="py-2 px-4 border-b">
+                        <td class="py-2 px-4">
                             <span th:if="${r.status.name() == 'available'}"
                                 class="text-green-600 font-semibold">Available</span>
                             <span th:if="${r.status.name() == 'deleted'}"
                                 class="text-red-600 font-semibold">Deleted</span>
                         </td>
 
-                        <td class="py-2 px-4 border-b space-x-2">
+                        <td class="px-4 py-2 flex gap-2 justify-center">
                             <a th:href="@{/dashboard/room/editroom/{id}(id=${r.roomId})}"
                                 class="bg-yellow-400 text-white px-3 py-1 rounded hover:bg-yellow-500">
                                 ✏️ Sửa

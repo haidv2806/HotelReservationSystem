@@ -30,11 +30,11 @@
             <select name="roomType"
                     class="w-full border border-cyan-400 rounded-xl px-3 py-2 focus:ring-2 focus:ring-cyan-400 text-gray-800">
                 <option value="" th:selected="${roomType == null}">Tất cả</option>
-                <option value="Single" th:selected="${roomType == 'Single'}">Single</option>
-                <option value="Double" th:selected="${roomType == 'Double'}">Double</option>
-                <option value="Twin" th:selected="${roomType == 'Twin'}">Twin</option>
+                <option value="Standard" th:selected="${roomType == 'Standard'}">Standard</option>
+                <option value="Superior" th:selected="${roomType == 'Superior'}">Superior</option>
+                <option value="Suite" th:selected="${roomType == 'Suite'}">Suite</option>
                 <option value="Deluxe" th:selected="${roomType == 'Deluxe'}">Deluxe</option>
-                <option value="VIP" th:selected="${roomType == 'VIP'}">VIP</option>
+                <option value="Family" th:selected="${roomType == 'Family'}">Family</option>
             </select>
         </div>
 
