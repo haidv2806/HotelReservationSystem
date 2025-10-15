@@ -37,7 +37,7 @@ public class RoomController {
                 .getContent();
     }
 
-    @GetMapping("/rooms/{id}")
+    @GetMapping("/{id}")
     public RoomDetailResponse roomDetail(@PathVariable("id") Integer roomId) {
         return roomService.getRoomDetail(roomId);
     }

@@ -51,7 +51,7 @@
                         <th class="px-4 py-2">Note</th>
                         <th class="px-4 py-2">Total Price</th>
                         <th class="px-4 py-2">Status</th>
-                        <th class="px-4 py-2">Action</th>
+                        <!-- <th class="px-4 py-2">Action</th> -->
                     </tr>
                 </thead>
                 <tbody>
@@ -82,12 +82,12 @@
                             </select>
                         </td>
                         <!-- 🗑️ Nút Xóa -->
-                        <td class="px-4 py-2 text-center">
+                        <!-- <td class="px-4 py-2 text-center">
                             <button type="button" class="bg-red-600 text-white px-3 py-1 rounded hover:bg-blue-700"
                                 th:onclick="'deleteBooking(' + ${b.idBooking} + ')'">
                                 🗑️
                             </button>
-                        </td>
+                        </td> -->
                     </tr>
                     <tr th:if="${#lists.isEmpty(bookings)}">
                         <td colspan="8" class="text-center py-4 text-gray-500">Không có booking nào</td>

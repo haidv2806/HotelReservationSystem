@@ -56,12 +56,13 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
 
     // Doanh thu theo tháng (booking CONFIRMED)
     @Query(value = """
-        SELECT DATE_FORMAT(b.checkin_date, '%Y-%m') AS month, 
-               SUM(b.total_price) AS revenue
-        FROM booking b
-        WHERE b.status = 'CONFIRMED'
-        GROUP BY DATE_FORMAT(b.checkin_date, '%Y-%m')
-        ORDER BY month ASC
+                SELECT 
+                DATE_FORMAT(b.checkin_date, '%Y-%m') AS month, 
+                SUM(b.total_price) AS revenue
+                FROM booking b
+                WHERE b.status IN ('CONFIRMED', 'CHECKED_IN', 'CHECKED_OUT')
+                GROUP BY DATE_FORMAT(b.checkin_date, '%Y-%m')
+                ORDER BY month ASC;
         """, nativeQuery = true)
     List<Object[]> getRevenueByMonth();
 
