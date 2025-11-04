@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<body th:fragment="chatbox" class="text-gray-800">
+  <!-- Nút bật/tắt chatbox -->
+  <button id="toggleChat"
+      class="fixed bottom-4 right-4 w-12 h-12 bg-indigo-600 text-white rounded-full shadow-lg flex items-center justify-center hover:bg-indigo-700 transition-transform hover:scale-110 z-50">💬</button>
+
+  <!-- Chatbox -->
+  <div id="chatbox"
+      class="fixed bottom-20 right-4 max-w-[25%] min-w-[200px] h-1/2 hidden bg-white border border-gray-200 rounded-2xl shadow-2xl flex flex-col overflow-hidden transition-all duration-300 z-50">
+      
+      <!-- Header -->
+      <div class="bg-gradient-to-r from-indigo-600 to-indigo-500 text-white p-3 text-sm font-semibold flex justify-between items-center rounded-t-2xl">
+          <span>💬 Chat hỗ trợ</span>
+          <button id="closeChat" class="text-white text-xs bg-white/20 hover:bg-white/30 rounded px-2 py-1">✕</button>
+      </div>
+
+      <!-- Vùng tin nhắn -->
+      <div id="messages" class="flex-1 overflow-auto p-3 flex flex-col space-y-2 text-sm bg-gray-50 text-gray-800">
+          <div class="self-start bg-white shadow-sm p-2 rounded-2xl rounded-bl-none border border-gray-200 w-fit max-w-[80%]">
+              Xin chào! Tôi có thể giúp gì cho bạn?
+          </div>
+      </div>
+
+      <!-- Ô nhập -->
+      <form id="composer" class="border-t border-gray-200 p-2 bg-white flex items-center gap-2">
+          <input id="input" type="text" placeholder="Nhập tin nhắn..."
+              class="flex-1 text-sm px-3 py-2 bg-gray-100 rounded-full focus:outline-none focus:ring-2 focus:ring-indigo-300 text-gray-800 transition" />
+          <button type="submit"
+              class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 text-sm rounded-full shadow-sm transition">Gửi</button>
+      </form>
+  </div>
+
+  <script>
+      const toggleChat = document.getElementById('toggleChat');
+      const chatbox = document.getElementById('chatbox');
+      const closeChat = document.getElementById('closeChat');
+      const composer = document.getElementById('composer');
+      const input = document.getElementById('input');
+      const messages = document.getElementById('messages');
+
+      toggleChat.addEventListener('click', () => {
+          chatbox.classList.toggle('hidden');
+      });
+
+      closeChat.addEventListener('click', () => {
+          chatbox.classList.add('hidden');
+      });
+
+      composer.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const value = input.value.trim();
+          if (!value) return;
+          
+          // tin nhắn người dùng
+          const msg = document.createElement('div');
+          msg.className = 'self-end bg-indigo-600 text-white p-2 rounded-2xl rounded-br-none w-fit max-w-[80%] text-right shadow-sm';
+          msg.textContent = value;
+          messages.appendChild(msg);
+          input.value = '';
+          messages.scrollTop = messages.scrollHeight;
+
+          // phản hồi bot
+          setTimeout(() => {
+              const reply = document.createElement('div');
+              reply.className = 'self-start bg-white border border-gray-200 p-2 rounded-2xl rounded-bl-none w-fit max-w-[80%] text-left shadow-sm text-gray-800';
+              reply.textContent = 'Bot: Đã nhận — ' + value;
+              messages.appendChild(reply);
+              messages.scrollTop = messages.scrollHeight;
+          }, 600);
+      });
+  </script>
+</body>
+</html>
