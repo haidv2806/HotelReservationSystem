@@ -135,7 +135,33 @@ public class RoomService implements RoomServiceImpl {
         return res;
     }
 
+    @Override
+    public List<RoomDetailResponse> getAllRoomDetails() {
+        // 1. Lấy tất cả phòng không bị đánh dấu là 'deleted'
+        List<Room> activeRooms = roomRepository.findByStatusNot(Room.Status.deleted);
 
+        List<RoomDetailResponse> allDetails = new ArrayList<>();
+
+        for (Room room : activeRooms) {
+            // Tái sử dụng logic lấy BlockDay
+            List<LocalDate> blockDates = RoomBlockDay(room.getRoomId());
+
+            // Tạo DTO
+            RoomDetailResponse res = new RoomDetailResponse(
+                    room.getRoomId(),
+                    room.getRoomName(),
+                    room.getDescription(),
+                    room.getImg(),
+                    room.getType(),
+                    room.getPrice().doubleValue(),
+                    blockDates);
+
+            allDetails.add(res);
+        }
+        return allDetails;
+    }
+
+    @Override
     public Room save(Room room) {
         return roomRepository.save(room);
     }
@@ -160,23 +186,21 @@ public class RoomService implements RoomServiceImpl {
         roomRepository.deleteById(id);
     }
 
-
-
-//    @Override
-//    public String deleteHandle(Integer id) {
-//        Optional<Room> result = this.findRoom(id);
-//
-//        if (result.isPresent()) {
-//            Room room = result.get();
-//            if (room.getStatus() == Room.Status.deleted) {
-//                return "Phòng đã bị xóa trước đó";
-//            }
-//            this.delete(id); // gọi hàm set status = deleted
-//            return "Xóa thành công";
-//        } else {
-//            return "Không tồn tại phòng";
-//        }
-//    }
+    // @Override
+    // public String deleteHandle(Integer id) {
+    // Optional<Room> result = this.findRoom(id);
+    //
+    // if (result.isPresent()) {
+    // Room room = result.get();
+    // if (room.getStatus() == Room.Status.deleted) {
+    // return "Phòng đã bị xóa trước đó";
+    // }
+    // this.delete(id); // gọi hàm set status = deleted
+    // return "Xóa thành công";
+    // } else {
+    // return "Không tồn tại phòng";
+    // }
+    // }
 
     @Override
     public String deleteHandle(Integer id) {
@@ -205,4 +229,3 @@ public class RoomService implements RoomServiceImpl {
     }
 
 }
-

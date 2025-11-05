@@ -1,5 +1,7 @@
 package com.example.HotelBookingSystem.dto;
 
-public record ChatRequest (String message){
-    
-}
+import java.util.List;
+public record ChatRequest(
+    String message,
+    List<String> history
+) {}

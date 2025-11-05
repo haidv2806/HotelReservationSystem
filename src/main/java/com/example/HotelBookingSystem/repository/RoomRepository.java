@@ -47,5 +47,7 @@ public interface RoomRepository extends JpaRepository<Room, Integer> {
             Pageable pageable);
     List<Room> findByStatus(Room.Status status);
 
+    List<Room> findByStatusNot(Room.Status status);
+
 }
 

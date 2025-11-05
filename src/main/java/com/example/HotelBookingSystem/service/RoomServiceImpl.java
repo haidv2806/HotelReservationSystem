@@ -31,4 +31,6 @@ public interface RoomServiceImpl {
 
     String deleteHandle(Integer id);
     Page<Room> findPaginated(int pageNo, int pageSize);
+
+    List<RoomDetailResponse> getAllRoomDetails();
 }
