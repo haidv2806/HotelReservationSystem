@@ -1,74 +1,149 @@
 <!doctype html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
 <body th:fragment="chatbox" class="text-gray-800">
-  <!-- Nút bật/tắt chatbox -->
-  <button id="toggleChat"
-      class="fixed bottom-4 right-4 w-12 h-12 bg-indigo-600 text-white rounded-full shadow-lg flex items-center justify-center hover:bg-indigo-700 transition-transform hover:scale-110 z-50">💬</button>
+    <!-- Nút bật/tắt chatbox -->
+    <button id="toggleChat"
+        class="fixed bottom-4 right-4 w-12 h-12 bg-indigo-600 text-white rounded-full shadow-lg flex items-center justify-center hover:bg-indigo-700 transition-transform hover:scale-110 z-50">💬</button>
 
-  <!-- Chatbox -->
-  <div id="chatbox"
-      class="fixed bottom-20 right-4 max-w-[25%] min-w-[200px] h-1/2 hidden bg-white border border-gray-200 rounded-2xl shadow-2xl flex flex-col overflow-hidden transition-all duration-300 z-50">
-      
-      <!-- Header -->
-      <div class="bg-gradient-to-r from-indigo-600 to-indigo-500 text-white p-3 text-sm font-semibold flex justify-between items-center rounded-t-2xl">
-          <span>💬 Chat hỗ trợ</span>
-          <button id="closeChat" class="text-white text-xs bg-white/20 hover:bg-white/30 rounded px-2 py-1">✕</button>
-      </div>
+    <!-- Chatbox -->
+    <div id="chatbox"
+        class="fixed bottom-20 right-4 max-w-[25%] min-w-[200px] h-1/2 hidden bg-white border border-gray-200 rounded-2xl shadow-2xl flex flex-col overflow-hidden transition-all duration-300 z-50">
 
-      <!-- Vùng tin nhắn -->
-      <div id="messages" class="flex-1 overflow-auto p-3 flex flex-col space-y-2 text-sm bg-gray-50 text-gray-800">
-          <div class="self-start bg-white shadow-sm p-2 rounded-2xl rounded-bl-none border border-gray-200 w-fit max-w-[80%]">
-              Xin chào! Tôi có thể giúp gì cho bạn?
-          </div>
-      </div>
+        <!-- Header -->
+        <div
+            class="bg-gradient-to-r from-indigo-600 to-indigo-500 text-white p-3 text-sm font-semibold flex justify-between items-center rounded-t-2xl">
+            <span>💬 Chat hỗ trợ</span>
+            <button id="closeChat" class="text-white text-xs bg-white/20 hover:bg-white/30 rounded px-2 py-1">✕</button>
+        </div>
 
-      <!-- Ô nhập -->
-      <form id="composer" class="border-t border-gray-200 p-2 bg-white flex items-center gap-2">
-          <input id="input" type="text" placeholder="Nhập tin nhắn..."
-              class="flex-1 text-sm px-3 py-2 bg-gray-100 rounded-full focus:outline-none focus:ring-2 focus:ring-indigo-300 text-gray-800 transition" />
-          <button type="submit"
-              class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 text-sm rounded-full shadow-sm transition">Gửi</button>
-      </form>
-  </div>
+        <!-- Vùng tin nhắn -->
+        <div id="messages" class="flex-1 overflow-auto p-3 flex flex-col space-y-2 text-sm bg-gray-50 text-gray-800">
+            <div
+                class="self-start bg-white shadow-sm p-2 rounded-2xl rounded-bl-none border border-gray-200 w-fit max-w-[80%]">
+                Xin chào! Tôi có thể giúp gì cho bạn?
+            </div>
+        </div>
 
-  <script>
-      const toggleChat = document.getElementById('toggleChat');
-      const chatbox = document.getElementById('chatbox');
-      const closeChat = document.getElementById('closeChat');
-      const composer = document.getElementById('composer');
-      const input = document.getElementById('input');
-      const messages = document.getElementById('messages');
+        <!-- Ô nhập -->
+        <form id="composer" class="border-t border-gray-200 p-2 bg-white flex items-center gap-2">
+            <input id="input" type="text" placeholder="Nhập tin nhắn..."
+                class="flex-1 text-sm px-3 py-2 bg-gray-100 rounded-full focus:outline-none focus:ring-2 focus:ring-indigo-300 text-gray-800 transition" />
+            <button type="submit"
+                class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 text-sm rounded-full shadow-sm transition">Gửi</button>
+        </form>
+    </div>
 
-      toggleChat.addEventListener('click', () => {
-          chatbox.classList.toggle('hidden');
-      });
+    <script>
+        const toggleChat = document.getElementById('toggleChat');
+        const chatbox = document.getElementById('chatbox');
+        const closeChat = document.getElementById('closeChat');
+        const composer = document.getElementById('composer');
+        const input = document.getElementById('input');
+        const messages = document.getElementById('messages');
 
-      closeChat.addEventListener('click', () => {
-          chatbox.classList.add('hidden');
-      });
+        // 1. KHAI BÁO BIẾN LỊCH SỬ
+        let chatHistory = [];
 
-      composer.addEventListener('submit', (e) => {
-          e.preventDefault();
-          const value = input.value.trim();
-          if (!value) return;
-          
-          // tin nhắn người dùng
-          const msg = document.createElement('div');
-          msg.className = 'self-end bg-indigo-600 text-white p-2 rounded-2xl rounded-br-none w-fit max-w-[80%] text-right shadow-sm';
-          msg.textContent = value;
-          messages.appendChild(msg);
-          input.value = '';
-          messages.scrollTop = messages.scrollHeight;
+        // Hàm tạo tin nhắn trên giao diện
+        function appendMessage(sender, content, isLink = false) {
+            const msg = document.createElement('div');
+            msg.className = sender === 'USER'
+                ? 'self-end bg-indigo-600 text-white p-2 rounded-2xl rounded-br-none w-fit max-w-[80%] text-right shadow-sm'
+                : 'self-start bg-white border border-gray-200 p-2 rounded-2xl rounded-bl-none w-fit max-w-[80%] text-left shadow-sm text-gray-800';
 
-          // phản hồi bot
-          setTimeout(() => {
-              const reply = document.createElement('div');
-              reply.className = 'self-start bg-white border border-gray-200 p-2 rounded-2xl rounded-bl-none w-fit max-w-[80%] text-left shadow-sm text-gray-800';
-              reply.textContent = 'Bot: Đã nhận — ' + value;
-              messages.appendChild(reply);
-              messages.scrollTop = messages.scrollHeight;
-          }, 600);
-      });
-  </script>
+            if (isLink) {
+                // Nếu nội dung chứa Markdown Link, chuyển đổi nó sang HTML
+                msg.innerHTML = convertMarkdownLinksToHtml(content);
+            } else {
+                msg.textContent = content;
+            }
+
+            messages.appendChild(msg);
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        // Hàm chuyển đổi [Text](URL) sang <a href="URL">Text</a>
+        function convertMarkdownLinksToHtml(text) {
+            // Regex tìm kiếm cú pháp [text](url)
+            const linkRegex = /\[([^\]]+)\]\((http[s]?:\/\/[^\s]+)\)/g;
+            return text.replace(linkRegex, '<a href="$2" target="_blank" class="text-indigo-600 underline font-medium hover:text-indigo-700">$1</a>');
+        }
+
+        // 2. HÀM GỌI API BẤT ĐỒNG BỘ
+        async function sendMessage(userMessage) {
+            // Tạo đối tượng ChatRequest
+            const requestBody = {
+                message: userMessage,
+                history: chatHistory
+            };
+
+            // Bật trạng thái loading
+            const loadingMessage = document.createElement('div');
+            loadingMessage.className = 'self-start text-gray-500 text-xs mt-1';
+            loadingMessage.textContent = 'Bot đang trả lời...';
+            messages.appendChild(loadingMessage);
+            messages.scrollTop = messages.scrollHeight;
+
+            try {
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+
+                if (!response.ok) {
+                    throw new Error('Lỗi API: ' + response.statusText);
+                }
+
+                const botResponse = await response.text();
+
+                // Xóa loading message
+                messages.removeChild(loadingMessage);
+
+                // Thêm phản hồi của Bot
+                appendMessage('ASSISTANT', botResponse, true); // Gửi cờ 'true' để xử lý link
+
+                // 3. CẬP NHẬT LỊCH SỬ TRÒ CHUYỆN
+                chatHistory.push(`USER: ${userMessage}`);
+                chatHistory.push(`ASSISTANT: ${botResponse}`);
+
+            } catch (error) {
+                console.error('Lỗi khi gửi tin nhắn:', error);
+                messages.removeChild(loadingMessage);
+                appendMessage('ASSISTANT', 'Xin lỗi, đã có lỗi xảy ra. Vui lòng thử lại.');
+            }
+        }
+
+        // Gắn sự kiện
+        toggleChat.addEventListener('click', () => {
+            chatbox.classList.toggle('hidden');
+        });
+
+        closeChat.addEventListener('click', () => {
+            chatbox.classList.add('hidden');
+        });
+
+        composer.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const value = input.value.trim();
+            if (!value) return;
+
+            // Thêm tin nhắn người dùng vào giao diện
+            appendMessage('USER', value);
+            input.value = '';
+
+            // Gửi tin nhắn đến API
+            sendMessage(value);
+        });
+
+        // Khởi tạo lịch sử với tin nhắn chào mừng mặc định
+        // Lưu ý: Nếu muốn tin nhắn chào mừng mặc định này được AI ghi nhớ, bạn phải định nghĩa nó trong System Message.
+        // Nếu không, chỉ cần tin nhắn chào mừng người dùng (ở đây là tin nhắn của Bot)
+        chatHistory.push(`ASSISTANT: Xin chào! Tôi có thể giúp gì cho bạn?`); 
+    </script>
 </body>
+
 </html>
